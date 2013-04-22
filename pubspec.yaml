@@ -1,0 +1,10 @@
+name: rikulo_security
+version: 0.5.0
+description: > 
+  A simple yet highly customizable authentication and access-control framework for Rikulo Stream.
+authors:
+- Tom Yeh <tomyeh@rikulo.org>
+homepage: http://rikulo.org/projects/stream
+dependencies:
+  stream: any
+  meta: any
