@@ -6,5 +6,5 @@ authors:
 - Tom Yeh <tomyeh@rikulo.org>
 homepage: http://rikulo.org/projects/stream
 dependencies:
-  stream: any
+  stream: {path: ../stream}
   meta: any

@@ -1,13 +1,14 @@
 //Copyright (C) 2013 Potix Corporation. All Rights Reserved.
-//History: Mon, Apr 22, 2013  4:43:54 PM
+//History: Tue, Apr 23, 2013  4:47:18 PM
 // Author: tomyeh
 
-library rikulo_security;
+library rikulo_security_plugin;
 
 import "dart:io";
 import "dart:async";
 import "package:meta/meta.dart";
 import "package:stream/stream.dart";
+import "security.dart";
 
-part "src/security/security_api.dart";
-part "src/security/security_impl.dart";
+part "src/plugin/access_control.dart";
+part "src/plugin/authenticator.dart";
