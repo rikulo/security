@@ -125,9 +125,12 @@ class Redirector {
   /** Returns the URI for displaying the login page again when
    * the user failed to login.
    *
-   * Default: `'/login?error'`
+   * Default: `'/login?retry='`
+   *
+   * Unlike others, Rikulo Security *forwards* the request to the URI
+   * returned by this method (rather than `HttpConnect.redirect()`).
    */
-  String getLoginFailed(HttpConnect connect) => "/login?error";
+  String getLoginFailed(HttpConnect connect) => "/login?retry=";
   /** Returns the URI that the user will be taken to after logging in.
    *
    * Default: `originalUri ?? '/'`

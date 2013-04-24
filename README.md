@@ -1,6 +1,6 @@
 #Rikulo Security
 
-Rikulo Security is a simple yet highly customizable authentication and access-control framework for [Rikulo Stream](http://rikulo.org/projects/stream).
+Rikulo Security is a lightweight and highly customizable authentication and access-control framework for [Rikulo Stream](http://rikulo.org/projects/stream).
 
 * [Home](http://rikulo.org)
 * [Documentation](http://docs.rikulo.org/stream/latest/Rikulo_Security/Fundamentals.html)
@@ -22,6 +22,37 @@ Then run the [Pub Package Manager](http://pub.dartlang.org/doc) (comes with the 
     pub install
 
 ##Usage
+
+ First, you have to implement [Authenticator](http://api.rikulo.org/security/latest/rikulo_security/Authenticator.html). For sake of description, we use a dummy implementation here called [DummyAuthenticator](http://api.rikulo.org/security/latest/rikulo_security_plugin/DummyAuthenticator.html):
+
+     final authenticator = new DummyAuthenticator()
+       ..addUser("john", "123", ["user"])
+       ..addUser("peter", "123", ["user", "admin"]);
+
+ Second, you can use [SimpleAccessControl](http://api.rikulo.org/security/latest/rikulo_security_plugin/SimpleAccessControl.html) or implement your own access control
+ ([AccessControl](http://api.rikulo.org/security/latest/rikulo_security/AccessControl.html)):
+
+     final accessControl = new SimpleAccessControl({
+       "/admin/.*": ["admin"],
+       "/member/.*": ["user", "admin"]
+     });
+
+ Finally, instantiate [Security](http://api.rikulo.org/security/latest/rikulo_security/Security.html) with the authenticator and access control you want:
+
+     final security = new Security(authenticator, accessControl);
+     new StreamServer(uriMapping: {
+       "/s_login": security.login,
+       "/s_logout": security.logout
+     }, filterMapping: {
+       "/.*": security.filter
+     }).start();
+
+Please refer to [this sample application](/rikulo/security/tree/master/example/hello) for more information.
+
+##TODO
+
+* Remember Me
+* Session fixation attack protection (wait for [Issue 10169](https://code.google.com/p/dart/issues/detail?id=10169) to be fixed).
 
 ##Notes to Contributors
 

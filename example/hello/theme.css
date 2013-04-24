@@ -14,3 +14,9 @@ h3 {
   font-size: 18px;
   margin: 13px 0 6px;
 }
+
+div.error {
+  color: red; padding: 5px;
+  border: 1px solid red;
+  margin-bottom: 16px;
+}

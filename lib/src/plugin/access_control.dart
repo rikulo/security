@@ -41,6 +41,7 @@ class SimpleAccessControl implements AccessControl {
             col1 = mapping.allowed;
             col2 = roles;
           }
+
           for (final role in col2)
             if (col1.contains(role))
               return true;

@@ -1,0 +1,22 @@
+[:page partOf="hello_security"]
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Sign in</title>
+    <link href="/theme.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body>
+  	<h1>Sign in</h1>
+    [:if request.queryParameters["retry"] != null]
+    <div class="error">Incorrect username or password.</div>
+    [/if]
+    <form action="/s_login" method="post" accept-charset="UTF-8">
+      Username<br/>
+      <input name="s_username" type="text" autofocus="true" size="30"/><br/>
+      Password<br/>
+      <input name="s_password" type="password" size="30"/>
+      <p><button type="submit">Sign in</button></p>
+    </form>
+	  <p>Usernames for testing: john (a normal user) and admin (an administrator). The password is 123.</p>
+  </body>
+</html>

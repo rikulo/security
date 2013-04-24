@@ -7,6 +7,7 @@ import "package:stream/stream.dart";
 import "package:rikulo_security/security.dart";
 import "package:rikulo_security/plugin.dart";
 
+part "home.rsp.dart";
 part "login.rsp.dart";
 
 void main() {
@@ -26,10 +27,13 @@ void main() {
 
   //4. start Stream server
   new StreamServer(uriMapping: {
+    "/": home, //home.rsp.html
     "/login": login, //login.rsp.html
     "/s_login": security.login,
     "/s_logout": security.logout
   }, filterMapping: {
     "/.*": security.filter
+  }, errorMapping: {
+    "404": "/404.html"
   }).start();
 }

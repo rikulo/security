@@ -1,14 +1,17 @@
+[:page partOf="hello_security"]
 <!DOCTYPE html>
 <html>
   <head>
     <title>Hello Rikulo Security</title>
     <link href="theme.css" rel="stylesheet" type="text/css" />
+    <meta http-equiv="cache-control" content="no-cache">
   </head>
   <body>
   	<h1>Hello Rikulo Security</h1>
+    <h2>Welcome, [=currentUser(request.session) != null ? currentUser(request.session): "Stranger"]</p>
     <ul>
       <li><a href="/member">Access the protected resource</a></li>
-      <li><a href="/member">Access the protected resource that requires administrator.</a></li>
+      <li><a href="/admin">Access the protected resource that requires administrator.</a></li>
     </ul>
   </body>
 </html>

@@ -26,27 +26,29 @@ class _Security implements Security {
       var user = currentUser(connect.request.session);
       if (user == null) {
         //1. remember me (TODO0)
-
-        //2. authorize
-        if (!_accessControl.canAccess(connect, user)) {
-          if (user == null) {
-            final request = connect.request;
-            request.session[_ATTR_ORIGINAL_URI] = request.uri.toString();
-            connect.redirect(_redirector.getLogin(connect));
-            return new Future.value();
-          }
-          throw new Http404(); //404 (not 401) to minimize attack
-        }
       }
-      //authorize
+      //2. authorize
+      if (!_accessControl.canAccess(connect, user)) {
+        if (user == null) {
+          final request = connect.request;
+          request.session[_ATTR_ORIGINAL_URI] = request.uri.toString();
+          connect.redirect(_redirector.getLogin(connect));
+          return new Future.value();
+        }
+        throw new Http404(); //404 (not 401) to minimize attack
+      }
+
+      //3. granted
       return chain(connect);
     };
     _login = (HttpConnect connect) {
+      final request = connect.request;
+
       //1. logout first
       return _logout(connect).then((_) {
         //2. get login information
-        //TODO: retrieve from HTTP body
-        final params = connect.request.queryParameters;
+        return HttpUtil.decodePostedParameters(request, request.queryParameters);
+      }).then((Map<String, String> params) {
         final username = params["s_username"];
         final password = params["s_password"];
 
@@ -54,21 +56,23 @@ class _Security implements Security {
         return _authenticator.login(connect, username, password);
       }).then((user) {
         //4. retrieve the URI for redirecting
-        var session = connect.request.session;
+        var session = request.session;
         String uri = session[_ATTR_ORIGINAL_URI];
 
         //5. session fixation attack protection
-        final data = new Map.from(session..remove(_ATTR_ORIGINAL_URI)..destroy());
-        session = connect.request.session; //re-create
-        data.forEach((key, value) {
-          session[key] = value;
-        });
+        //TODO: wait Issue 10169
+        //final data = new Map.from(session..remove(_ATTR_ORIGINAL_URI));
+        //session.destroy();
+        session = request.session; //re-create
+        //data.forEach((key, value) {
+        //  session[key] = value;
+        //});
         _setCurrentUser(session, user);
 
         //6. redirect
         connect.redirect(_redirector.getLoginTarget(connect, uri));
       }).catchError((ex) {
-        connect.redirect(_redirector.getLoginFailed(connect));
+        return connect.forward(_redirector.getLoginFailed(connect));
       }, test: (ex) => ex is AuthenticationException);
     };
     _logout = (HttpConnect connect) {

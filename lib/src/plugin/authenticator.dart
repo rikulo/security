@@ -24,14 +24,10 @@ class DummyAuthenticator extends Authenticator {
   }
 
 }
-class _DummyUserInfo {
-  final SimpleUser user;
-  final String password;
-  _DummyUserInfo(this.user, this.password);
-}
 
-/** A simple implementation of a user.
- * It is used in [DummyAuthenticator].
+/* The user used in [DummyAuthenticator]
+ * Notice that it is used only for demostration. Your implementation
+ * need *not* to depend on it.
  */
 class SimpleUser {
   final Set<String> _roles;
@@ -44,5 +40,12 @@ class SimpleUser {
   ///The roles that this user has.
   Set<String> get roles => _roles;
 
-  String toString() => "$username$roles";
+  String toString() => "$username";
+}
+
+///The user information
+class _DummyUserInfo {
+  final SimpleUser user;
+  final String password;
+  _DummyUserInfo(this.user, this.password);
 }
