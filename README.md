@@ -10,6 +10,8 @@ Rikulo Security is a lightweight and highly customizable authentication and acce
 
 Stream is distributed under an Apache 2.0 License.
 
+[![Build Status](https://drone.io/github.com/rikulo/security/status.png)](https://drone.io/github.com/rikulo/security/latest)
+
 ##Installation
 
 Add this to your `pubspec.yaml` (or create it):
