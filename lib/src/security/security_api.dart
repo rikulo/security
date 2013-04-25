@@ -184,12 +184,13 @@ class RememberUri {
   /** Saves the given request's URI, such that it can be recalled later when
    * [recall] was called.
    *
-   * Default: it saves `request.uri.toString()` in the session, regardless
-   * if the request is GET, POST or others.
+   * Default: it saves `request.uri.toString()` in the session if the request
+   * is GET.
    */
   void save(HttpConnect connect) {
     final request = connect.request;
-    request.session[_ATTR_REMEMBER_URI] = request.uri.toString();
+    if (request.method.toUpperCase() == "GET")
+      request.session[_ATTR_REMEMBER_URI] = request.uri.toString();
   }
   /** Returns the previous saved URI, or null if nothing was saved.
    */
