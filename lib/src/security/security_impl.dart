@@ -6,8 +6,6 @@ part of rikulo_security;
 
 ///Session attribute for storing the current user
 const _ATTR_USER = "stream.user";
-///Session attribute for storing the original URI
-const _ATTR_ORIGINAL_URI = "stream.original.uri";
 
 /** The implementation of the security module.
  */
@@ -15,23 +13,27 @@ class _Security implements Security {
   final Authenticator _authenticator;
   final AccessControl _accessControl;
   final Redirector _redirector;
+  final RememberMe _rememberMe;
+  final RememberUri _rememberUri;
   RequestFilter _filter;
   RequestHandler _login, _logout;
 
-  _Security(this._authenticator, this._accessControl, this._redirector) {
+  _Security(this._authenticator, this._accessControl, this._redirector,
+      this._rememberMe, this._rememberUri) {
     _init();
   }
   void _init() {
     _filter = (HttpConnect connect, Future chain(HttpConnect conn)) {
+      //1. remember me
       var user = currentUser(connect.request.session);
-      if (user == null) {
-        //1. remember me (TODO0)
+      if (user == null && _rememberMe != null) {
+        user = _rememberMe.recall(connect);
       }
+
       //2. authorize
       if (!_accessControl.canAccess(connect, user)) {
         if (user == null) {
-          final request = connect.request;
-          request.session[_ATTR_ORIGINAL_URI] = request.uri.toString();
+          _rememberUri.save(connect);
           connect.redirect(_redirector.getLogin(connect));
           return new Future.value();
         }
@@ -56,10 +58,10 @@ class _Security implements Security {
         return _authenticator.login(connect, username, password);
       }).then((user) {
         //4. retrieve the URI for redirecting
-        var session = request.session;
-        String uri = session[_ATTR_ORIGINAL_URI];
+        String uri = _rememberUri.recall(connect);
 
         //5. session fixation attack protection
+        var session = request.session;
         //TODO: wait Issue 10169
         //final data = new Map.from(session..remove(_ATTR_ORIGINAL_URI));
         //session.destroy();
@@ -69,7 +71,11 @@ class _Security implements Security {
         //});
         _setCurrentUser(session, user);
 
-        //6. redirect
+        //6. remember me
+        if (_rememberMe != null)
+          _rememberMe.save(connect, user);
+
+        //7. redirect
         connect.redirect(_redirector.getLoginTarget(connect, uri));
       }).catchError((ex) {
         return connect.forward(_redirector.getLoginFailed(connect));

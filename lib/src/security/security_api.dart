@@ -49,14 +49,21 @@ _setCurrentUser(HttpSession session, user) {
 abstract class Security {
   /** Constructor.
    *
-   * * [loginUri] - specifies the URI to redirect to, if the current session is
-   * not authenticated and it accesses the resource that requires some authorities
-   * (i.e., under the control of [AccessControl]).
+   * * [redirector] - provides the URIs that will be used in different situations.
+   * If omitted, an instance of [Redirector] is instantiated and used.
+   * * [rememberMe] - provides the plugin implementing *rememeber-me*.
+   * If omitted, no remember-me feature at all. Also notice that *remember-me*
+   * is enabled only if the `s_remember_me` parameter is specified with `true`
+   * when [login] receives a request.
+   * * [rememberUri] - provides the plugin implementing *remember-uri*.
+   * If omitted, an instance of [RememberUri] is instantiated and used.
    */
   factory Security(Authenticator authenticator, AccessControl accessControl, {
-      Redirector redirector})
+      Redirector redirector, RememberMe rememberMe, RememberUri rememberUri})
   => new _Security(authenticator, accessControl,
-      redirector != null ? redirector: new Redirector());
+      redirector != null ? redirector: new Redirector(),
+			rememberMe,
+      rememberUri != null ? rememberUri: new RememberUri());
 
   /** The filter used to configure Stream server's filter mapping.
    */
@@ -148,6 +155,49 @@ class Redirector {
    */
   String getLogoutTarget(HttpConnect connect) => "/";
 }
+
+/** The remember-me plug-in.
+ *
+ * > Notice that [save] was called only if the `s_remember_me` parameter is
+ * specified with `true`.
+ */
+abstract class RememberMe {
+  /** Saves the given user for the given connection, such that it can be
+   * recalled later when [recall] is called.
+   *
+   * The user's information is usually saved in a cookie (of the response).
+   *
+   * > Notice the cookie can be manipulated by a hostile user, so it is
+   * better encoded and packed with extra information that can be verified
+   * at the server.
+   */
+  void save(HttpConnect connect, user);
+  /** Returns the user if the given connection is established by a user
+   * that was saved in [save].
+   */
+  recall(HttpConnect connect);
+}
+/** The remember-me plug-in. It is used to redirect the user back to
+ * the protected resource after logging in.
+ */
+class RememberUri {
+  /** Saves the given request's URI, such that it can be recalled later when
+   * [recall] was called.
+   *
+   * Default: it saves `request.uri.toString()` in the session, regardless
+   * if the request is GET, POST or others.
+   */
+  void save(HttpConnect connect) {
+    final request = connect.request;
+    request.session[_ATTR_REMEMBER_URI] = request.uri.toString();
+  }
+  /** Returns the previous saved URI, or null if nothing was saved.
+   */
+  String recall(HttpConnect connect)
+  => connect.request.session[_ATTR_REMEMBER_URI];
+}
+///Session attribute for storing the original URI
+const _ATTR_REMEMBER_URI = "stream.remember.uri";
 
 /** The authentication being invalid.
  */
