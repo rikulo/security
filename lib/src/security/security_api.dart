@@ -27,7 +27,7 @@ _setCurrentUser(HttpSession session, user) {
  *       ..addUser("john", "123", ["user"])
  *       ..addUser("peter", "123", ["user", "admin"]);
  *
- * Second, you can use [SimpleAccessControl] or implement your own access control
+ * Second, you can use `SimpleAccessControl` or implement your own access control
  * ([AccessControl]):
  *
  *     final accessControl = new SimpleAccessControl({
