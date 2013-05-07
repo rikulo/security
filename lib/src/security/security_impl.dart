@@ -62,13 +62,12 @@ class _Security implements Security {
 
         //5. session fixation attack protection
         var session = request.session;
-        //TODO: wait Issue 10169
-        //final data = new Map.from(session..remove(_ATTR_ORIGINAL_URI));
-        //session.destroy();
+        final data = new Map.from(session..remove(_ATTR_REMEMBER_URI));
+        session.destroy();
         session = request.session; //re-create
-        //data.forEach((key, value) {
-        //  session[key] = value;
-        //});
+        data.forEach((key, value) {
+          session[key] = value;
+        });
         _setCurrentUser(session, user);
 
         //6. remember me

@@ -51,10 +51,6 @@ Then run the [Pub Package Manager](http://pub.dartlang.org/doc) (comes with the 
 
 Please refer to [this sample application](/rikulo/security/tree/master/example/hello) for more information.
 
-##TODO
-
-* Session fixation attack protection (wait for [Issue 10169](https://code.google.com/p/dart/issues/detail?id=10169) to be fixed).
-
 ##Notes to Contributors
 
 ###Fork Rikulo Security
