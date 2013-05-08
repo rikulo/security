@@ -49,7 +49,7 @@ Then run the [Pub Package Manager](http://pub.dartlang.org/doc) (comes with the 
        "/.*": security.filter
      }).start();
 
-Please refer to [this sample application](/rikulo/security/tree/master/example/hello) for more information.
+Please refer to [this sample application](https://github.com/rikulo/security/tree/master/example/hello) for more information.
 
 ##Notes to Contributors
 
