@@ -7,5 +7,6 @@ rikulo_async
 rikulo_io
 rikulo_mirrors
 rikulo_util
+rikulo_browser
 stream
 stream_plugin

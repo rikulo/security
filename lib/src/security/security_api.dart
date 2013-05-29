@@ -76,6 +76,31 @@ abstract class Security {
    * the logout.
    */
   RequestHandler get logout;
+
+  /** Notifies Rikulo Security that the given user logged in.
+   * It is used if you allow the user to login in a different channel,
+   * such as Ajax and registration.
+   */
+  void setLogin(HttpConnect connect, user);
+  /** Notifies Rikulo Security that the current user has logged out.
+   * It is used if you allow the user to logout in a different channel,
+   * such as Ajax.
+   *
+   * * [data] - specifies the data you'd like to preserve in the new session
+   * after logout. If omitted, nothing is preserved.
+   */
+  void setLogout(HttpConnect connect, [Map<String, dynamic> data]);
+
+  ///The authenticator.
+  Authenticator get authenticator;
+  ///The access control.
+  AccessControl get accessControl;
+  ///The redirector.
+  Redirector get redirector;
+  ///The remember me.
+  RememberMe get rememberMe;
+  ///The remember URI.
+  RememberUri get rememberUri;
 }
 
 /** The authenticator who determines authenticity.

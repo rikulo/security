@@ -10,31 +10,26 @@ const _ATTR_USER = "stream.user";
 /** The implementation of the security module.
  */
 class _Security implements Security {
-  final Authenticator _authenticator;
-  final AccessControl _accessControl;
-  final Redirector _redirector;
-  final RememberMe _rememberMe;
-  final RememberUri _rememberUri;
   RequestFilter _filter;
   RequestHandler _login, _logout;
 
-  _Security(this._authenticator, this._accessControl, this._redirector,
-      this._rememberMe, this._rememberUri) {
+  _Security(this.authenticator, this.accessControl, this.redirector,
+      this.rememberMe, this.rememberUri) {
     _init();
   }
   void _init() {
     _filter = (HttpConnect connect, Future chain(HttpConnect conn)) {
       //1. remember me
       var user = currentUser(connect.request.session);
-      if (user == null && _rememberMe != null) {
-        user = _rememberMe.recall(connect);
+      if (user == null && rememberMe != null) {
+        user = rememberMe.recall(connect);
       }
 
       //2. authorize
-      if (!_accessControl.canAccess(connect, user)) {
+      if (!accessControl.canAccess(connect, user)) {
         if (user == null) {
-          _rememberUri.save(connect);
-          connect.redirect(_redirector.getLogin(connect));
+          rememberUri.save(connect);
+          connect.redirect(redirector.getLogin(connect));
           return new Future.value();
         }
         throw new Http404(); //404 (not 401) to minimize attack
@@ -44,40 +39,28 @@ class _Security implements Security {
       return chain(connect);
     };
     _login = (HttpConnect connect) {
-      final request = connect.request;
-
       //1. logout first
       return _logout(connect).then((_) {
         //2. get login information
-        return HttpUtil.decodePostedParameters(request, request.queryParameters);
+        return HttpUtil.decodePostedParameters(
+          connect.request, connect.request.queryParameters);
       }).then((Map<String, String> params) {
         final username = params["s_username"];
         final password = params["s_password"];
 
         //3. login
-        return _authenticator.login(connect, username, password);
+        return authenticator.login(connect, username, password);
       }).then((user) {
         //4. retrieve the URI for redirecting
-        String uri = _rememberUri.recall(connect);
+        String uri = rememberUri.recall(connect);
 
-        //5. session fixation attack protection
-        var session = request.session;
-        final data = new Map.from(session..remove(_ATTR_REMEMBER_URI));
-        session.destroy();
-        session = request.session; //re-create
-        data.forEach((key, value) {
-          session[key] = value;
-        });
-        _setCurrentUser(session, user);
-
-        //6. remember me
-        if (_rememberMe != null)
-          _rememberMe.save(connect, user);
+        //5-6 session/cookie handling
+        setLogin(connect, user);
 
         //7. redirect
-        connect.redirect(_redirector.getLoginTarget(connect, uri));
+        connect.redirect(redirector.getLoginTarget(connect, uri));
       }).catchError((ex) {
-        return connect.forward(_redirector.getLoginFailed(connect));
+        return connect.forward(redirector.getLoginFailed(connect));
       }, test: (ex) => ex is AuthenticationException);
     };
     _logout = (HttpConnect connect) {
@@ -85,18 +68,38 @@ class _Security implements Security {
       if (user == null)
         return new Future.value();
 
-      final result = _authenticator.logout(connect, user);
+      final result = authenticator.logout(connect, user);
       return (result != null ? result: new Future.value()).then((Map data) {
-        final session = connect.request.session..clear();
-        if (data != null) {
-          data.forEach((key, value) {
-            session[key] = value;
-          });
-          _setCurrentUser(session, null); //safe if data contains it
-        }
-        connect.redirect(_redirector.getLogoutTarget(connect));
+        setLogout(connect, data);
+        connect.redirect(redirector.getLogoutTarget(connect));
       });
     };
+  }
+
+  @override
+  void setLogin(HttpConnect connect, user) {
+    //5. session fixation attack protection
+    var session = connect.request.session;
+    final data = new Map.from(session..remove(_ATTR_REMEMBER_URI));
+    session.destroy();
+    session = connect.request.session; //re-create
+    data.forEach((key, value) {
+      session[key] = value;
+    });
+    _setCurrentUser(session, user);
+
+    //6. remember me
+    if (rememberMe != null)
+      rememberMe.save(connect, user);
+  }
+  void setLogout(HttpConnect connect, [Map<String, dynamic> data]) {
+    final session = connect.request.session..clear();
+    if (data != null) {
+      data.forEach((key, value) {
+        session[key] = value;
+      });
+      _setCurrentUser(session, null); //safe if data contains it
+    }
   }
 
   @override
@@ -105,4 +108,15 @@ class _Security implements Security {
   RequestHandler get login => _login;
   @override
   RequestHandler get logout => _logout;
+
+  @override
+  final Authenticator authenticator;
+  @override
+  final AccessControl accessControl;
+  @override
+  final Redirector redirector;
+  @override
+  final RememberMe rememberMe;
+  @override
+  final RememberUri rememberUri;
 }
