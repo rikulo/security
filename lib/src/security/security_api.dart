@@ -120,14 +120,14 @@ abstract class Authenticator {
   Future login(HttpConnect connect, String username, String password);
   /** Logout.
    *
-   * The default implementation does nothing but returns null.
+   * The default implementation does nothing but returns `new Future.value()`.
    * You can override it for housekeeping if necessary.
    *
    * * [user] - the current user being logged out.
-   * * Returns the data you'd like to preserve in the new session after logout.
-   * If null, nothing is preserved.
+   * * Returns a [Future] instance carrying the data you'd like to preserve
+   * in the new session after logout. If it carries null, nothing is preserved.
    */
-  Future<Map> logout(HttpConnect connect, user) => null;
+  Future<Map> logout(HttpConnect connect, user) => new Future.value();
 }
 
 /** The access control.

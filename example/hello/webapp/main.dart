@@ -7,8 +7,8 @@ import "package:stream/stream.dart";
 import "package:rikulo_security/security.dart";
 import "package:rikulo_security/plugin.dart";
 
-part "home.rsp.dart";
-part "login.rsp.dart";
+part "rsp/home.rsp.dart";
+part "rsp/login.rsp.dart";
 
 void main() {
   //1. you have to implement [Authenticator]. For sake of description, we use a dummy one

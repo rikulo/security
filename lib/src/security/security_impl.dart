@@ -11,7 +11,8 @@ const _ATTR_USER = "stream.user";
  */
 class _Security implements Security {
   RequestFilter _filter;
-  RequestHandler _login, _logout;
+  RequestHandler _login;
+  Function _logout; //we add a named parameter so we can't use RequestHandler
 
   _Security(this.authenticator, this.accessControl, this.redirector,
       this.rememberMe, this.rememberUri) {
@@ -40,7 +41,7 @@ class _Security implements Security {
     };
     _login = (HttpConnect connect) {
       //1. logout first
-      return _logout(connect).then((_) {
+      return _logout(connect, redirect:false).then((_) {
         //2. get login information
         return HttpUtil.decodePostedParameters(
           connect.request, connect.request.queryParameters);
@@ -63,15 +64,18 @@ class _Security implements Security {
         return connect.forward(redirector.getLoginFailed(connect));
       }, test: (ex) => ex is AuthenticationException);
     };
-    _logout = (HttpConnect connect) {
+    _logout = (HttpConnect connect, {bool redirect: true}) {
       var user = currentUser(connect.request.session);
-      if (user == null)
+      if (user == null) {
+        if (redirect)
+          connect.redirect(redirector.getLogoutTarget(connect));
         return new Future.value();
+      }
 
-      final result = authenticator.logout(connect, user);
-      return (result != null ? result: new Future.value()).then((Map data) {
+      return authenticator.logout(connect, user).then((Map data) {
         setLogout(connect, data);
-        connect.redirect(redirector.getLogoutTarget(connect));
+        if (redirect)
+          connect.redirect(redirector.getLogoutTarget(connect));
       });
     };
   }
