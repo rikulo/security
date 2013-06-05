@@ -21,7 +21,7 @@ Future login(HttpConnect connect) { //#2
   	<h1>Sign in</h1>
 """); //#2
 
-  if (request.queryParameters["retry"] != null) { //if#10
+  if (request.uri.queryParameters["retry"] != null) { //if#10
 
     response.write("""
     <div class="error">Incorrect username or password.</div>
