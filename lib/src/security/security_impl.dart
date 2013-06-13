@@ -43,8 +43,8 @@ class _Security implements Security {
       //1. logout first
       return _logout(connect, redirect:false).then((_) {
         //2. get login information
-        return HttpUtil.decodePostedParameters(
-          connect.request, connect.request.uri.queryParameters);
+        return HttpUtil.decodePostedParameters(connect.request,
+          new HashMap.from(connect.request.uri.queryParameters));
       }).then((Map<String, String> params) {
         final username = params["s_username"];
         final password = params["s_password"];
