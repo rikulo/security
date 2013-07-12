@@ -7,12 +7,9 @@ Future login(HttpConnect connect) { //#2
   var _t0_, _cs_ = new List<HttpConnect>();
   HttpRequest request = connect.request;
   HttpResponse response = connect.response;
+  Rsp.init(connect, "text/html; charset=utf-8");
 
-  if (!connect.isIncluded)
-    response.headers.contentType = ContentType.parse("""text/html; charset=utf-8""");
-
-  response.write("""
-<!DOCTYPE html>
+  response.write("""<!DOCTYPE html>
 <html>
   <head>
     <title>Sign in</title>
@@ -24,13 +21,11 @@ Future login(HttpConnect connect) { //#2
 
   if (request.uri.queryParameters["retry"] != null) { //if#10
 
-    response.write("""
-    <div class="error">Incorrect username or password.</div>
+    response.write("""    <div class="error">Incorrect username or password.</div>
 """); //#11
   } //if
 
-  response.write("""
-    <form action="/s_login" method="post" accept-charset="UTF-8">
+  response.write("""    <form action="/s_login" method="post" accept-charset="UTF-8">
       Username<br/>
       <input name="s_username" type="text" autofocus="true" size="30"/><br/>
       Password<br/>

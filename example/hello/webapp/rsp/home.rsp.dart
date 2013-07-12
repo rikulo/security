@@ -7,12 +7,9 @@ Future home(HttpConnect connect) { //#2
   var _t0_, _cs_ = new List<HttpConnect>();
   HttpRequest request = connect.request;
   HttpResponse response = connect.response;
+  Rsp.init(connect, "text/html; charset=utf-8");
 
-  if (!connect.isIncluded)
-    response.headers.contentType = ContentType.parse("""text/html; charset=utf-8""");
-
-  response.write("""
-<!DOCTYPE html>
+  response.write("""<!DOCTYPE html>
 <html>
   <head>
     <title>Hello Rikulo Security</title>
@@ -26,8 +23,7 @@ Future home(HttpConnect connect) { //#2
   response.write(Rsp.nnx(currentUser(request.session) != null ? currentUser(request.session): "Stranger")); //#11
 
 
-  response.write("""
-</p>
+  response.write("""</p>
     <ul>
       <li><a href="/member">Access the protected resource</a></li>
       <li><a href="/admin">Access the protected resource that requires administrator.</a></li>
