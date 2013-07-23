@@ -80,16 +80,25 @@ abstract class Security {
   /** Notifies Rikulo Security that the given user logged in.
    * It is used if you allow the user to login in a different channel,
    * such as Ajax and registration.
+   *
+   * * [rememberMe] - whether remember-me is enabled or disabled.
+   * If omitted (null), remember-me won't be updated.
+   * It is meaningful
+   * only if the constructor is called with a [RememberMe] instance.
+   *
+   * * It returns a [Future] object (never null) to indicate when it completes.
    */
-  void setLogin(HttpConnect connect, user);
+  Future setLogin(HttpConnect connect, user, [bool rememberMe]);
   /** Notifies Rikulo Security that the current user has logged out.
    * It is used if you allow the user to logout in a different channel,
    * such as Ajax.
    *
    * * [data] - specifies the data you'd like to preserve in the new session
    * after logout. If omitted, nothing is preserved.
+   *
+   * * It returns a [Future] object (never null) to indicate when it completes.
    */
-  void setLogout(HttpConnect connect, [Map<String, dynamic> data]);
+  Future setLogout(HttpConnect connect, [Map<String, dynamic> data]);
 
   ///The authenticator.
   Authenticator get authenticator;
@@ -188,19 +197,31 @@ class Redirector {
  */
 abstract class RememberMe {
   /** Saves the given user for the given connection, such that it can be
-   * recalled later when [recall] is called.
+   * recalled later when [recall] is called. If [rememberMe] is false,
+   * this method shall clean up the information saved in the previous
+   * invocation.
    *
    * The user's information is usually saved in a cookie (of the response).
    *
    * > Notice the cookie can be manipulated by a hostile user, so it is
    * better encoded and packed with extra information that can be verified
    * at the server.
+   *
+   * * [rememberMe] - whether remember-me is enabled. The user can disable
+   * it if he likes. If false, it means to clean up the cookie.
+   *
+   * * It returns a [Future] object to indicate when it completes.
+   * If it completes immediately, it can return null.
    */
-  void save(HttpConnect connect, user);
-  /** Returns the user if the given connection is established by a user
-   * that was saved in [save].
+  Future save(HttpConnect connect, user, bool rememberMe);
+  /** It returns a Future object carrying the user if the given connection
+   * is established by a user that was saved in [save]. Thus, caller can do:
+   *
+   *     rememberMe.recall(connect).then((user) {...});
+   *
+   * It can return null to indicate nothing being recalled.
    */
-  recall(HttpConnect connect);
+  Future recall(HttpConnect connect);
 }
 /** The remember-me plug-in. It is used to redirect the user back to
  * the protected resource after logging in.
