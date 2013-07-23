@@ -6,9 +6,10 @@ meta
 options
 path
 rikulo_async
+rikulo_browser
 rikulo_io
+rikulo_logging
 rikulo_mirrors
 rikulo_util
-rikulo_browser
 stream
 stream_plugin
