@@ -33,7 +33,7 @@ class _Security implements Security {
       return _authorize(connect, user, chain);
     };
     _login = (HttpConnect connect, {String username, String password,
-        bool rememberMe, bool rememberUri: true}) {
+        bool rememberMe, bool redirect: true}) {
       String uri;
 
       //1. logout first
@@ -52,8 +52,8 @@ class _Security implements Security {
       }).then((_) {
         //3. retrieve the URI for redirecting
         //we have to do it before login since login will re-create a session
-        if (rememberUri == null || rememberUri)
-          uri = this.rememberUri.recall(connect);
+        if (redirect == null || redirect)
+          uri = rememberUri.recall(connect);
 
         //4. login
         return authenticator.login(connect, username, password);
@@ -63,7 +63,8 @@ class _Security implements Security {
 
       }).then((_) {
         //6. redirect
-        connect.redirect(redirector.getLoginTarget(connect, uri));
+        if (redirect == null || redirect)
+          connect.redirect(redirector.getLoginTarget(connect, uri));
 
       }).catchError((ex) {
         return connect.forward(redirector.getLoginFailed(connect));

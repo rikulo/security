@@ -27,7 +27,7 @@ _setCurrentUser(HttpSession session, user) {
  * method directly by providing the username and password:
  *
  *     security.login(connect, username: username, password: password,
- *       rememberMe: false, rememberUri: false);
+ *       rememberMe: false, redirect: false);
  *
  * For other cases, you can use [Security.setLogin] (such as implementing
  * auto sign-in).
@@ -36,13 +36,13 @@ _setCurrentUser(HttpSession session, user) {
  * If omitted (null), remember-me won't be updated.
  * It is meaningful
  * only if the constructor is called with a [RememberMe] instance.
- * * [rememberUri] - whether to remember [connect]'s path and redirect
- * back to it after logged in. If omitted, it is default to true.
+ * * [redirect] - whether to redirect back to the original URI
+ * (`connect.request.uri`). If omitted, it means true.
  *
  * * It returns a [Future] object (never null) to indicate when it completes.
  */
 typedef Future LoginHandler(HttpConnect connect, {
-  String username, String password, bool rememberMe, bool rememberUri});
+  String username, String password, bool rememberMe, bool redirect});
 
 /** The logout render handler that is returned by [Security.logout].
  *
