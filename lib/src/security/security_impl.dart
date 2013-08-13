@@ -34,6 +34,8 @@ class _Security implements Security {
     };
     _login = (HttpConnect connect) {
       bool rememberMe;
+      String uri;
+
       //1. logout first
       return _logout(connect, redirect:false).then((_) {
         //2. get login information
@@ -43,17 +45,18 @@ class _Security implements Security {
         final password = params["s_password"];
         rememberMe = params["s_rememberMe"] == "true";
 
-        //3. login
+        //3. retrieve the URI for redirecting
+        //we have to do it before login since login will re-create a session
+        uri = rememberUri.recall(connect);
+
+        //4. login
         return authenticator.login(connect, username, password);
       }).then((user) {
-        //4-5 session/cookie handling
+        //5 session/cookie handling
         return setLogin(connect, user, rememberMe);
 
       }).then((_) {
-        //6. retrieve the URI for redirecting
-        String uri = rememberUri.recall(connect);
-
-        //7. redirect
+        //6. redirect
         connect.redirect(redirector.getLoginTarget(connect, uri));
 
       }).catchError((ex) {
