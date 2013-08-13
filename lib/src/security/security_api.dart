@@ -16,6 +16,53 @@ _setCurrentUser(HttpSession session, user) {
     session.remove(_ATTR_USER);
 }
 
+/** The login render handler that is returned by [Security.login].
+ *
+ * For form-based authentication, you have to map [Security.login]
+ * to the login action, `/s_login`, as described in [Security]:
+ *
+ *     "/s_login": security.login,
+ *
+ * If you'd like to login in an Ajax request, you can invoke this
+ * method directly by providing the username and password:
+ *
+ *     security.login(connect, username: username, password: password,
+ *       rememberMe: false, rememberUri: false);
+ *
+ * For other cases, you can use [Security.setLogin] (such as implementing
+ * auto sign-in).
+ *
+ * * [rememberMe] - whether remember-me is enabled or disabled.
+ * If omitted (null), remember-me won't be updated.
+ * It is meaningful
+ * only if the constructor is called with a [RememberMe] instance.
+ * * [rememberUri] - whether to remember [connect]'s path and redirect
+ * back to it after logged in. If omitted, it is default to true.
+ *
+ * * It returns a [Future] object (never null) to indicate when it completes.
+ */
+typedef Future LoginHandler(HttpConnect connect, {
+  String username, String password, bool rememberMe, bool rememberUri});
+
+/** The logout render handler that is returned by [Security.logout].
+ *
+ * For form-based authentication, you have to map [Security.logout]
+ * to the lgout action, `/s_logout`, as described in [Security]:
+ *
+ *     "/s_logout": security.logout,
+ *
+ * If you'd like to logout in an Ajax request, you can invoke this method
+ * directly:
+ *
+ *     security.logout(connect, redirect: false);
+ *
+ * * [redirect] - whether to redirect to the default web page (defined in
+ * [Redirector]). If omitted, it means true.
+ *
+ * * It returns a [Future] object (never null) to indicate when it completes.
+ */
+typedef Future LogoutHandler(HttpConnect connect, {bool redirect});
+
 /** The security module.
  *
  * ##Usage
@@ -71,15 +118,17 @@ abstract class Security {
   /** The handler used to configure Stream server's URI mapping for handling
    * the login.
    */
-  RequestHandler get login;
+  LoginHandler get login;
   /** The handler used to configure Stream server's URI mapping for handling
    * the logout.
    */
-  RequestHandler get logout;
+  LogoutHandler get logout;
 
   /** Notifies Rikulo Security that the given user logged in.
-   * It is used if you allow the user to login in a different channel,
-   * such as Ajax and registration.
+   * It is useful if you allows the user to login automatically, such as
+   * remember-me mechanism and the sign-up mechanism.
+   *
+   * > For FORM or Ajax login, please use [login] instead.
    *
    * * [rememberMe] - whether remember-me is enabled or disabled.
    * If omitted (null), remember-me won't be updated.
@@ -88,17 +137,7 @@ abstract class Security {
    *
    * * It returns a [Future] object (never null) to indicate when it completes.
    */
-  Future setLogin(HttpConnect connect, user, [bool rememberMe]);
-  /** Notifies Rikulo Security that the current user has logged out.
-   * It is used if you allow the user to logout in a different channel,
-   * such as Ajax.
-   *
-   * * [data] - specifies the data you'd like to preserve in the new session
-   * after logout. If omitted, nothing is preserved.
-   *
-   * * It returns a [Future] object (never null) to indicate when it completes.
-   */
-  Future setLogout(HttpConnect connect, [Map<String, dynamic> data]);
+  Future setLogin(HttpConnect connect, user, {bool rememberMe});
 
   ///The authenticator.
   Authenticator get authenticator;
