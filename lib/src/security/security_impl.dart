@@ -35,6 +35,7 @@ class _Security implements Security {
     _login = (HttpConnect connect, {String username, String password,
         bool rememberMe, bool redirect: true}) {
       String uri;
+      redirect = redirect != false; //including null
 
       //1. logout first
       return _logout(connect, redirect: false).then((_) {
@@ -48,7 +49,9 @@ class _Security implements Security {
               if (rememberMe == null)
                 rememberMe = params["s_rememberMe"] == "true";
             });
-          }
+        } else {
+          rememberMe = rememberMe == true; //excluding null
+        }
       }).then((_) {
         //3. retrieve the URI for redirecting
         //we have to do it before login since login will re-create a session

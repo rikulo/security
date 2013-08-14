@@ -23,11 +23,13 @@ _setCurrentUser(HttpSession session, user) {
  *
  *     "/s_login": security.login,
  *
- * If you'd like to login in an Ajax request, you can invoke this
- * method directly by providing the username and password:
+ * If you'd like to login in an Ajax request, SOAP or others,
+ * you can invoke this method directly by providing the username, password
+ * and, optional, rememberMe:
  *
+ *     //prepare username, password, rememberMe from, say, Ajax
  *     security.login(connect, username: username, password: password,
- *       rememberMe: false, redirect: false);
+ *       rememberMe: rememberMe, redirect: false);
  *
  * For other cases, you can use [Security.setLogin] (such as implementing
  * auto sign-in).
