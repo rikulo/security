@@ -55,7 +55,7 @@ class _Security implements Security {
       }).then((_) {
         //3. retrieve the URI for redirecting
         //we have to do it before login since login will re-create a session
-        if (redirect == null || redirect)
+        if (redirect)
           uri = rememberUri.recall(connect);
 
         //4. login
@@ -66,12 +66,12 @@ class _Security implements Security {
 
       }).then((_) {
         //6. redirect
-        if (redirect == null || redirect)
+        if (redirect)
           connect.redirect(redirector.getLoginTarget(connect, uri));
 
       }).catchError((ex) {
         return connect.forward(redirector.getLoginFailed(connect));
-      }, test: (ex) => ex is AuthenticationException);
+      }, test: (ex) => redirect && ex is AuthenticationException);
     };
     _logout = (HttpConnect connect, {bool redirect: true}) {
       var user = currentUser(connect.request.session);

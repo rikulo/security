@@ -40,6 +40,8 @@ _setCurrentUser(HttpSession session, user) {
  * only if the constructor is called with a [RememberMe] instance.
  * * [redirect] - whether to redirect back to the original URI
  * (`connect.request.uri`). If omitted, it means true.
+ * Notice: if [redirect] is false, the caller has to handle
+ * [AuthenticationException] in `catchError` (if true, it is handled automatically).
  *
  * * It returns a [Future] object (never null) to indicate when it completes.
  */
@@ -153,7 +155,7 @@ abstract class Security {
   RememberUri get rememberUri;
 }
 
-/** The authenticator who determines authenticity.
+/** The authenticator.
  */
 abstract class Authenticator {
   /** Authenticates the given username and password.
