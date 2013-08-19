@@ -7,15 +7,18 @@ part of rikulo_security;
 ///Session attribute for storing the current user
 const _ATTR_USER = "stream.user";
 
+typedef void _LoggingCallback(HttpConnect connect, user);
+
 /** The implementation of the security module.
  */
 class _Security implements Security {
   RequestFilter _filter;
   LoginHandler _login;
   LogoutHandler _logout; //we add a named parameter so we can't use RequestHandler
+  _LoggingCallback _onLogin, _onLogout;
 
   _Security(this.authenticator, this.accessControl, this.redirector,
-      this.rememberMe, this.rememberUri) {
+      this.rememberMe, this.rememberUri, this._onLogin, this._onLogout) {
     _init();
   }
   void _init() {
@@ -25,8 +28,12 @@ class _Security implements Security {
       if (user == null && rememberMe != null) {
         Future result = rememberMe.recall(connect);
         if (result != null)
-          return result.then((user) => _authorize(connect, user, chain));
-          //2-3: authorize and chain
+          return result.then((user) {
+              if (user != null) //failed to recall
+              setLogin(connect, user);
+            return _authorize(connect, user, chain);
+              //2-3: authorize and chain
+          });
       }
 
       //2-3: authorize and chain
@@ -91,6 +98,8 @@ class _Security implements Security {
           _setCurrentUser(session, null); //safe if data contains it
         }
       }).then((_) {
+        if (_onLogout != null)
+          _onLogout(connect, user);
         if (redirect)
           connect.redirect(redirector.getLogoutTarget(connect));
       });
@@ -128,7 +137,10 @@ class _Security implements Security {
     Future result;
     if (this.rememberMe != null && rememberMe != null) //null => ignored
       result = this.rememberMe.save(connect, user, rememberMe);
-    return result !=null ? result: new Future.value();
+    return (result !=null ? result: new Future.value()).then((_) {
+      if (_onLogin != null)
+        _onLogin(connect, user);
+    });
   }
 
   @override

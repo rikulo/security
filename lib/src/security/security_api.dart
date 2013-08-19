@@ -108,13 +108,18 @@ abstract class Security {
    * when [login] receives a request.
    * * [rememberUri] - provides the plugin implementing *remember-uri*.
    * If omitted, an instance of [RememberUri] is instantiated and used.
+   * * [onLogin] and [onLogout] are used for registering a callback for handling
+   * initialization of login and cleanup of logout.
    */
   factory Security(Authenticator authenticator, AccessControl accessControl, {
-      Redirector redirector, RememberMe rememberMe, RememberUri rememberUri})
+      Redirector redirector, RememberMe rememberMe, RememberUri rememberUri,
+      void onLogin(HttpConnect connect, user),
+      void onLogout(HttpConnect connect, user)})
   => new _Security(authenticator, accessControl,
       redirector != null ? redirector: new Redirector(),
 			rememberMe,
-      rememberUri != null ? rememberUri: new RememberUri());
+      rememberUri != null ? rememberUri: new RememberUri(),
+      onLogin, onLogout);
 
   /** The filter used to configure Stream server's filter mapping.
    */
