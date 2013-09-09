@@ -7,7 +7,7 @@ part of rikulo_security;
 ///Session attribute for storing the current user
 const _ATTR_USER = "stream.user";
 
-typedef void _LoggingCallback(HttpConnect connect, user);
+typedef Future _LoginCallback(HttpConnect connect, user);
 
 /** The implementation of the security module.
  */
@@ -15,7 +15,7 @@ class _Security implements Security {
   RequestFilter _filter;
   LoginHandler _login;
   LogoutHandler _logout; //we add a named parameter so we can't use RequestHandler
-  _LoggingCallback _onLogin, _onLogout;
+  _LoginCallback _onLogin, _onLogout;
 
   _Security(this.authenticator, this.accessControl, this.redirector,
       this.rememberMe, this.rememberUri, this._onLogin, this._onLogout) {
@@ -99,7 +99,8 @@ class _Security implements Security {
         }
       }).then((_) {
         if (_onLogout != null)
-          _onLogout(connect, user);
+          return _onLogout(connect, user);
+      }).then((_) {
         if (redirect)
           connect.redirect(redirector.getLogoutTarget(connect));
       });
@@ -139,7 +140,7 @@ class _Security implements Security {
       result = this.rememberMe.save(connect, user, rememberMe);
     return (result !=null ? result: new Future.value()).then((_) {
       if (_onLogin != null)
-        _onLogin(connect, user);
+        return _onLogin(connect, user);
     });
   }
 

@@ -109,12 +109,14 @@ abstract class Security {
    * * [rememberUri] - provides the plugin implementing *remember-uri*.
    * If omitted, an instance of [RememberUri] is instantiated and used.
    * * [onLogin] and [onLogout] are used for registering a callback for handling
-   * initialization of login and cleanup of logout.
+   * initialization of login and cleanup of logout. It can return null if
+   * it completes immediately. Otherwise, return a [Future] instance to indicate
+   * when it completes.
    */
   factory Security(Authenticator authenticator, AccessControl accessControl, {
       Redirector redirector, RememberMe rememberMe, RememberUri rememberUri,
-      void onLogin(HttpConnect connect, user),
-      void onLogout(HttpConnect connect, user)})
+      Future onLogin(HttpConnect connect, user),
+      Future onLogout(HttpConnect connect, user)})
   => new _Security(authenticator, accessControl,
       redirector != null ? redirector: new Redirector(),
 			rememberMe,
