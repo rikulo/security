@@ -6,7 +6,6 @@ library rikulo_security;
 
 import "dart:io";
 import "dart:async";
-import "dart:collection" show HashMap;
 
 import "package:meta/meta.dart";
 import "package:stream/stream.dart";
