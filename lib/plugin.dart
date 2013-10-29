@@ -6,7 +6,6 @@ library rikulo_security_plugin;
 
 import "dart:io";
 import "dart:async";
-import "package:meta/meta.dart";
 import "package:stream/stream.dart";
 import "security.dart";
 
