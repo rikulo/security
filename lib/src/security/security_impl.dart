@@ -7,7 +7,8 @@ part of rikulo_security;
 ///Session attribute for storing the current user
 const _ATTR_USER = "stream.user";
 
-typedef Future _LoginCallback(HttpConnect connect, user);
+typedef Future _LoginCallback(HttpConnect connect, user, bool rememberMe);
+typedef Future _LogoutCallback(HttpConnect connect, user);
 
 /** The implementation of the security module.
  */
@@ -15,7 +16,8 @@ class _Security implements Security {
   RequestFilter _filter;
   LoginHandler _login;
   LogoutHandler _logout; //we add a named parameter so we can't use RequestHandler
-  _LoginCallback _onLogin, _onLogout;
+  _LoginCallback _onLogin;
+  _LogoutCallback _onLogout;
 
   _Security(this.authenticator, this.accessControl, this.redirector,
       this.rememberMe, this.rememberUri, this._onLogin, this._onLogout) {
@@ -52,7 +54,11 @@ class _Security implements Security {
           return HttpUtil.decodePostedParameters(connect.request)
             .then((Map<String, String> params) {
               username = params["s_username"];
+              if (username == null)
+                username = "";
               password = params["s_password"];
+              if (password == null)
+                password = "";
               if (rememberMe == null)
                 rememberMe = params["s_rememberMe"] == "true";
             });
@@ -77,7 +83,9 @@ class _Security implements Security {
           connect.redirect(redirector.getLoginTarget(connect, uri));
 
       }).catchError((ex) {
-        return connect.forward(redirector.getLoginFailed(connect));
+        uri = redirector.getLoginFailed(connect, username, rememberMe);
+        return redirector.isRedirectOnFail ?
+          connect.redirect(uri): connect.forward(uri);
       }, test: (ex) => redirect && ex is AuthenticationException);
     };
     _logout = (HttpConnect connect, {bool redirect: true}) {
@@ -140,7 +148,7 @@ class _Security implements Security {
       result = this.rememberMe.save(connect, user, rememberMe);
     return (result !=null ? result: new Future.value()).then((_) {
       if (_onLogin != null)
-        return _onLogin(connect, user);
+        return _onLogin(connect, user, rememberMe);
     });
   }
 

@@ -115,7 +115,7 @@ abstract class Security {
    */
   factory Security(Authenticator authenticator, AccessControl accessControl, {
       Redirector redirector, RememberMe rememberMe, RememberUri rememberUri,
-      Future onLogin(HttpConnect connect, user),
+      Future onLogin(HttpConnect connect, user, bool rememberMe),
       Future onLogout(HttpConnect connect, user)})
   => new _Security(authenticator, accessControl,
       redirector != null ? redirector: new Redirector(),
@@ -216,12 +216,26 @@ class Redirector {
   /** Returns the URI for displaying the login page again when
    * the user failed to login.
    *
-   * Default: `'/login?retry='`
+   * Default: `'/login?error=1&user=$username'`
+   * or `'/login?error=1&user=$username&reme=1'` (if rememberMe is true)
    *
-   * Unlike others, Rikulo Security *forwards* the request to the URI
-   * returned by this method (rather than `HttpConnect.redirect()`).
+   * `HttpConnect.redirect()` will be called to redirect if
+   * [isRedirectOnFail] is true. Otherwise, `HttpConnect.forward()` is called.
+   *
+   * + [username] - the username that the user entered.
+   * + [rememberMe] - the value of the remember-me field, or null
+   * if not available.
    */
-  String getLoginFailed(HttpConnect connect) => "/login?retry=";
+  String getLoginFailed(HttpConnect connect, String username, bool rememberMe) {
+    final String uri = "/login?error=1&user=$username";
+    return rememberMe ? "$uri&reme=1": uri;
+  }
+  /** Whether to redirect the request or forward when failed to login.
+   *
+   * Default: true.
+   */
+  bool get isRedirectOnFail => true;
+
   /** Returns the URI that the user will be taken to after logging in.
    *
    * Default: `originalUri ?? '/'`
