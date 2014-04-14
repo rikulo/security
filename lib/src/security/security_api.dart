@@ -34,6 +34,10 @@ _setCurrentUser(HttpSession session, user) {
  * For other cases, you can use [Security.setLogin] (such as implementing
  * auto sign-in).
  *
+ * * [username] - specifies the user name. If not specified, [useranme]
+ * [password] and [rememberMe] will be retrieved
+ * from HTTP request's body (by use of
+ * `HttpUtil.decodePostedParameters(connect.request)`).
  * * [rememberMe] - whether remember-me is enabled or disabled.
  * If omitted (null), remember-me won't be updated.
  * It is meaningful

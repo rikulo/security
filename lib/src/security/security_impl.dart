@@ -78,18 +78,18 @@ class _Security implements Security {
         //5 session/cookie handling
         return setLogin(connect, user, rememberMe: rememberMe);
 
+      }).then((_) {
+        //6. redirect
+        if (redirect)
+          connect.redirect(redirector.getLoginTarget(connect, uri));
+
       }).catchError((ex) {
         uri = redirector.getLoginFailed(connect, username, rememberMe);
         return redirector.isRedirectOnFail ?
           connect.redirect(uri): connect.forward(uri);
       }, test: (ex) => handleAuthenticationException && redirect
-          && ex is AuthenticationException)
+          && ex is AuthenticationException);
 
-      .then((_) {
-        //6. redirect
-        if (redirect)
-          connect.redirect(redirector.getLoginTarget(connect, uri));
-      });
     };
     _logout = (HttpConnect connect, {bool redirect: true}) {
       var user = currentUser(connect.request.session);
