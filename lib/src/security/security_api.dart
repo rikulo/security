@@ -43,10 +43,16 @@ _setCurrentUser(HttpSession session, user) {
  * Notice: if [redirect] is false, the caller has to handle
  * [AuthenticationException] in `catchError` (if true, it is handled automatically).
  *
+ * * [handleAuthenticationException] - whether to handle [AuthenticationException].
+ * If false, the caller has to handle by himself.
+ * Also notice that if [redirect] is false, it also implies *no* handling of
+ * [AuthenticationException].
+ *
  * * It returns a [Future] object (never null) to indicate when it completes.
  */
 typedef Future LoginHandler(HttpConnect connect, {
-  String username, String password, bool rememberMe, bool redirect});
+  String username, String password, bool rememberMe, bool redirect,
+  bool handleAuthenticationException});
 
 /** The logout render handler that is returned by [Security.logout].
  *
@@ -128,6 +134,9 @@ abstract class Security {
   RequestFilter get filter;
   /** The handler used to configure Stream server's URI mapping for handling
    * the login.
+   *
+   * > Note: the default value of [redirect] and [handleAuthenticationException]
+   * are both true.
    */
   LoginHandler get login;
   /** The handler used to configure Stream server's URI mapping for handling

@@ -42,7 +42,8 @@ class _Security implements Security {
       return _authorize(connect, user, chain);
     };
     _login = (HttpConnect connect, {String username, String password,
-        bool rememberMe, bool redirect: true}) {
+        bool rememberMe, bool redirect: true,
+        bool handleAuthenticationException: true}) {
       String uri;
       redirect = redirect != false; //including null
 
@@ -77,16 +78,18 @@ class _Security implements Security {
         //5 session/cookie handling
         return setLogin(connect, user, rememberMe: rememberMe);
 
-      }).then((_) {
-        //6. redirect
-        if (redirect)
-          connect.redirect(redirector.getLoginTarget(connect, uri));
-
       }).catchError((ex) {
         uri = redirector.getLoginFailed(connect, username, rememberMe);
         return redirector.isRedirectOnFail ?
           connect.redirect(uri): connect.forward(uri);
-      }, test: (ex) => redirect && ex is AuthenticationException);
+      }, test: (ex) => handleAuthenticationException && redirect
+          && ex is AuthenticationException)
+
+      .then((_) {
+        //6. redirect
+        if (redirect)
+          connect.redirect(redirector.getLoginTarget(connect, uri));
+      });
     };
     _logout = (HttpConnect connect, {bool redirect: true}) {
       var user = currentUser(connect.request.session);
