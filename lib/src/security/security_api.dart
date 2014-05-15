@@ -316,8 +316,11 @@ class RememberUri {
       request.session[_ATTR_REMEMBER_URI] = request.uri.toString();
   }
   /** Returns the previous saved URI, or null if nothing was saved.
+   *
+   * * [parameters] - the posted parameters sent with the login request.
+   * It is empty if you invoke `security.login` directly (s.t., with Ajax login).
    */
-  String recall(HttpConnect connect)
+  String recall(HttpConnect connect, Map<String, String> parameters)
   => connect.request.session[_ATTR_REMEMBER_URI];
 }
 ///Session attribute for storing the original URI

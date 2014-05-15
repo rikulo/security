@@ -45,6 +45,7 @@ class _Security implements Security {
         bool rememberMe, bool redirect: true,
         bool handleAuthenticationException: true}) {
       String uri;
+      Map<String, String> params;
       redirect = redirect != false; //including null
 
       //1. logout first
@@ -53,7 +54,8 @@ class _Security implements Security {
           //2. get login information
           //FORM-based login  (note: we ignore query parameters)
           return HttpUtil.decodePostedParameters(connect.request)
-            .then((Map<String, String> params) {
+            .then((Map<String, String> _) {
+              params = _;
               username = params["s_username"];
               if (username == null)
                 username = "";
@@ -65,12 +67,13 @@ class _Security implements Security {
             });
         } else {
           rememberMe = rememberMe == true; //excluding null
+          params = new HashMap();
         }
       }).then((_) {
         //3. retrieve the URI for redirecting
         //we have to do it before login since login will re-create a session
         if (redirect)
-          uri = rememberUri.recall(connect);
+          uri = rememberUri.recall(connect, params);
 
         //4. login
         return authenticator.login(connect, username, password);
