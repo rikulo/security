@@ -215,7 +215,7 @@ abstract class AccessControl {
    * will be thrown. If you prefer other status code (such as 401), you can
    * throw an exception in this method.
    */
-  bool canAccess(HttpConnect connect, user);
+  Future<bool> canAccess(HttpConnect connect, user);
 }
 
 /** The redirector to provide URI for different situations.

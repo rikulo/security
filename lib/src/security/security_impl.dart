@@ -122,18 +122,21 @@ class _Security implements Security {
   }
   //called by _filter to authorize and chain
   Future _authorize(HttpConnect connect, user, Future chain(HttpConnect conn)) {
-    //2. authorize
-    if (!accessControl.canAccess(connect, user)) {
-      if (user == null) {
-        rememberUri.save(connect);
-        connect.redirect(redirector.getLogin(connect));
-        return new Future.value();
+    //1. check accessibility
+    return accessControl.canAccess(connect, user)
+    .then((bool accessible) {
+      if (!accessible) {
+        if (user == null) {
+          rememberUri.save(connect);
+          connect.redirect(redirector.getLogin(connect));
+          return null; //redirect for login
+        }
+        throw new Http404(); //404 (not 401) to minimize attack
       }
-      throw new Http404(); //404 (not 401) to minimize attack
-    }
 
-    //3. granted and chain
-    return chain(connect);
+      //2. granted and chain
+      return chain(connect);
+    });
   }
 
   @override
