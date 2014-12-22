@@ -30,12 +30,12 @@ class _Security implements Security {
       if (user == null && rememberMe != null) {
         Future result = rememberMe.recall(connect);
         if (result != null)
-          return result.then((user) {
-              if (user != null) //failed to recall
-              setLogin(connect, user);
-            return _authorize(connect, user, chain);
-              //2-3: authorize and chain
-          });
+          return result
+          .then((user) {
+            if (user != null) //failed to recall
+              return setLogin(connect, user);
+          })
+          .then((_) => _authorize(connect, user, chain)); //2-3: authorize and chain
       }
 
       //2-3: authorize and chain
@@ -155,7 +155,8 @@ class _Security implements Security {
     Future result;
     if (this.rememberMe != null && rememberMe != null) //null => ignored
       result = this.rememberMe.save(connect, user, rememberMe);
-    return (result !=null ? result: new Future.value()).then((_) {
+    return (result != null ? result: new Future.value())
+    .then((_) {
       if (_onLogin != null)
         return _onLogin(connect, user, rememberMe);
     });
