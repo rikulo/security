@@ -1,5 +1,9 @@
 #CHANGES
 
+**0.8.3**
+
+* Security.setLogin() introduces additional argument: resetSession
+
 **0.8.1**
 
 * #6: `AccessControl.canAccess()` became asynchronous

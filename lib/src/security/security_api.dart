@@ -160,8 +160,11 @@ abstract class Security {
    * only if the constructor is called with a [RememberMe] instance.
    *
    * * It returns a [Future] object (never null) to indicate when it completes.
+   * * [resetSession] - whether to re-create another session to replace the
+   * current one. By default, it is true for session fixation attack protection.
    */
-  Future setLogin(HttpConnect connect, user, {bool rememberMe});
+  Future setLogin(HttpConnect connect, user, {bool rememberMe,
+      bool resetSession: true});
 
   ///The authenticator.
   Authenticator get authenticator;

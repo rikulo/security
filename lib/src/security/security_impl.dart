@@ -140,15 +140,20 @@ class _Security implements Security {
   }
 
   @override
-  Future setLogin(HttpConnect connect, user, {bool rememberMe}) {
+  Future setLogin(HttpConnect connect, user, {bool rememberMe,
+      bool resetSession: true}) {
     //5. session fixation attack protection
     var session = connect.request.session;
-    final data = new Map.from(session..remove(_ATTR_REMEMBER_URI));
-    session.destroy();
-    session = connect.request.session; //re-create
-    data.forEach((key, value) {
-      session[key] = value;
-    });
+    if (resetSession) {
+      final data = new Map.from(session..remove(_ATTR_REMEMBER_URI));
+      session.destroy();
+      session = connect.request.session; //re-create
+      data.forEach((key, value) {
+        session[key] = value;
+      });
+    }
+
+    //5a. store the user
     _setCurrentUser(session, user);
 
     //6. remember me
