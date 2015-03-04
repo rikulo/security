@@ -5,7 +5,7 @@
 part of rikulo_security;
 
 ///Session attribute for storing the current user
-const _ATTR_USER = "stream.user";
+const String _ATTR_USER = "stream.user";
 
 typedef Future _LoginCallback(HttpConnect connect, user, bool rememberMe);
 typedef Future _LogoutCallback(HttpConnect connect, user);
@@ -141,7 +141,7 @@ class _Security implements Security {
 
   @override
   Future setLogin(HttpConnect connect, user, {bool rememberMe,
-      bool resetSession: true}) {
+      bool resetSession: true, bool onLogin: true}) {
     //5. session fixation attack protection
     var session = connect.request.session;
     if (resetSession) {
@@ -157,12 +157,12 @@ class _Security implements Security {
     _setCurrentUser(session, user);
 
     //6. remember me
-    Future result;
-    if (this.rememberMe != null && rememberMe != null) //null => ignored
-      result = this.rememberMe.save(connect, user, rememberMe);
-    return (result != null ? result: new Future.value())
+    return new Future.sync(() {
+      if (this.rememberMe != null && rememberMe != null) //null => ignored
+        return this.rememberMe.save(connect, user, rememberMe);
+    })
     .then((_) {
-      if (_onLogin != null)
+      if (onLogin && _onLogin != null)
         return _onLogin(connect, user, rememberMe);
     });
   }

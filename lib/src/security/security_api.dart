@@ -162,9 +162,10 @@ abstract class Security {
    * * It returns a [Future] object (never null) to indicate when it completes.
    * * [resetSession] - whether to re-create another session to replace the
    * current one. By default, it is true for session fixation attack protection.
+   * * [onLogin] - whether to call the onLogin callback. Default: true.
    */
   Future setLogin(HttpConnect connect, user, {bool rememberMe,
-      bool resetSession: true});
+      bool resetSession: true, bool onLogin: true});
 
   ///The authenticator.
   Authenticator get authenticator;
