@@ -3,9 +3,7 @@
 part of hello_security;
 
 /** Template, login, for rendering the view. */
-Future login(HttpConnect connect) { //#2
-  var _t0_, _cs_ = new List<HttpConnect>();
-  HttpRequest request = connect.request;
+Future login(HttpConnect connect) async { //#2
   HttpResponse response = connect.response;
   if (!Rsp.init(connect, "text/html; charset=utf-8"))
     return new Future.value();

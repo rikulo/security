@@ -10,12 +10,12 @@ DIR=$( cd $( dirname "${BASH_SOURCE[0]}" ) && pwd )
 pushd $DIR/..
 
 echo Analyzing library for warnings or type errors
-dartanalyzer --fatal-warnings --fatal-type-errors lib/*.dart \
+dartanalyzer --fatal-warnings lib/*.dart \
   || echo -e "Ignoring analyzer errors"
 
 for fn in `grep -l 'main[(][)]' */*/*/*.dart|grep -v packages/`; do
 	echo Analyzing $fn
-	dartanalyzer --fatal-warnings --fatal-type-errors lib/*.dart \
+	dartanalyzer --fatal-warnings lib/*.dart \
 	  || echo -e "Ignoring analyzer errors"
 done
 
