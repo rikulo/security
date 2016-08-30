@@ -1,4 +1,4 @@
-#Rikulo Security
+# Rikulo Security
 
 Rikulo Security is a lightweight and highly customizable authentication and access-control framework for [Rikulo Stream](http://rikulo.org/projects/stream).
 
@@ -13,7 +13,7 @@ Stream is distributed under an Apache 2.0 License.
 
 [![Build Status](https://drone.io/github.com/rikulo/security/status.png)](https://drone.io/github.com/rikulo/security/latest)
 
-##Installation
+## Installation
 
 Add this to your `pubspec.yaml` (or create it):
 
@@ -24,7 +24,7 @@ Then run the [Pub Package Manager](http://pub.dartlang.org/doc) (comes with the 
 
     pub install
 
-##Usage
+## Usage
 
  First, you have to implement [Authenticator](http://api.rikulo.org/security/latest/rikulo_security/Authenticator.html). For sake of description, we use a dummy implementation here called [DummyAuthenticator](http://api.rikulo.org/security/latest/rikulo_security_plugin/DummyAuthenticator.html):
 
@@ -52,9 +52,9 @@ Then run the [Pub Package Manager](http://pub.dartlang.org/doc) (comes with the 
 
 Please refer to [this sample application](https://github.com/rikulo/security/tree/master/example/hello) for more information.
 
-##Notes to Contributors
+## Notes to Contributors
 
-###Fork Rikulo Security
+### Fork Rikulo Security
 
 If you'd like to contribute back to the core, you can [fork this repository](https://help.github.com/articles/fork-a-repo) and send us a pull request, when it is ready.
 
@@ -62,6 +62,6 @@ Please be aware that one of Rikulo Security's design goals is to keep the sphere
 
 If you are new to Git or GitHub, please read [this guide](https://help.github.com/) first.
 
-##Who Uses
+## Who Uses
 
 * [Quire](https://quire.io) - a simple, collaborative, multi-level task management tool.
