@@ -34,8 +34,8 @@ class SimpleAccessControl implements AccessControl {
           final roles = user.roles;
           Set<String> col1;
           Iterable<String> col2;
-          if (roles is Set && roles.length > mapping.allowed.length) {
-            col1 = roles as Set;
+          if (roles is Set<String> && roles.length > mapping.allowed.length) {
+            col1 = roles;
             col2 = mapping.allowed;
           } else {
             col1 = mapping.allowed;
