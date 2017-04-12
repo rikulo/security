@@ -26,7 +26,7 @@ class SimpleAccessControl implements AccessControl {
   }
 
   @override
-  Future<bool> canAccess(HttpConnect connect, user) {
+  Future<bool> canAccess(HttpConnect connect, user) async {
     final uri = connect.request.uri.path;
     for (final mapping in _mapping) {
       if (mapping.pattern.hasMatch(uri)) { //protected
@@ -44,12 +44,12 @@ class SimpleAccessControl implements AccessControl {
 
           for (final role in col2)
             if (col1.contains(role))
-              return new Future.value(true);
+              return true;
         }
-        return new Future.value(false); //denied
+        return false; //denied
       }
     }
-    return new Future.value(true); //granted
+    return true; //granted
   }
 }
 

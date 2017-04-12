@@ -16,10 +16,10 @@ class DummyAuthenticator extends Authenticator {
   }
 
   @override
-  Future<SimpleUser> login(HttpConnect connect, String username, String password) {
+  Future<SimpleUser> login(HttpConnect connect, String username, String password) async {
     final userInfo = _userInfos[username];
     if (userInfo != null && userInfo.password == password)
-      return new Future.value(userInfo.user);
+      return userInfo.user;
     throw new AuthenticationException("Incorrect username or password");
   }
 

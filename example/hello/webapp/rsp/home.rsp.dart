@@ -3,10 +3,10 @@
 part of hello_security;
 
 /** Template, home, for rendering the view. */
-Future home(HttpConnect connect) async { //#2
+Future home(HttpConnect connect) async {
   HttpResponse response = connect.response;
   if (!Rsp.init(connect, "text/html; charset=utf-8"))
-    return new Future.value();
+    return null;
 
   response.write("""<!DOCTYPE html>
 <html>
@@ -17,9 +17,9 @@ Future home(HttpConnect connect) async { //#2
   </head>
   <body>
   	<h1>Hello Rikulo Security</h1>
-    <h2>Welcome, """); //#2
+    <h2>Welcome, """);
 
-  response.write(Rsp.nnx(currentUser(request.session) != null ? currentUser(request.session): "Stranger")); //#11
+  response.write(Rsp.nnx(currentUser(connect.request.session) != null ? currentUser(connect.request.session): "Stranger"));
 
 
   response.write("""</p>
@@ -29,7 +29,7 @@ Future home(HttpConnect connect) async { //#2
     </ul>
   </body>
 </html>
-"""); //#11
+""");
 
-  return new Future.value();
+  return null;
 }

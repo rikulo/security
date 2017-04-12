@@ -9,7 +9,7 @@ part of rikulo_security;
  */
 currentUser(HttpSession session) => session[_ATTR_USER];
 /// Sets the current user.
-_setCurrentUser(HttpSession session, user) {
+void _setCurrentUser(HttpSession session, user) {
   if (user != null)
     session[_ATTR_USER] = user;
   else
@@ -186,24 +186,24 @@ abstract class Authenticator {
    * The returned `Future` object shall carry the user object if successful.
    * If failed, throw an instance of [AuthenticationException]:
    *
-   *     Future login(HttpConnect connect, String username, String password) {
+   *     Future login(HttpConnect connect, String username, String password) async {
    *       //...
    *       if (failed)
    *         throw new AuthenticationException("the cause");
-   *       return new Future.value(new User(username, roles)); //any non-null object
+   *       return new User(username, roles); //any non-null object
    *     });
    */
   Future login(HttpConnect connect, String username, String password);
   /** Logout.
    *
-   * The default implementation does nothing but returns `new Future.value()`.
+   * The default implementation does nothing but returns `null`.
    * You can override it for housekeeping if necessary.
    *
    * * [user] - the current user being logged out.
    * * Returns a [Future] instance carrying the data you'd like to preserve
    * in the new session after logout. If it carries null, nothing is preserved.
    */
-  Future<Map> logout(HttpConnect connect, user) => new Future.value();
+  Future<Map> logout(HttpConnect connect, user) => null;
 }
 
 /** The access control.
@@ -298,11 +298,11 @@ abstract class RememberMe {
   /** It returns a Future object carrying the user if the given connection
    * is established by a user that was saved in [save]. Thus, caller can do:
    *
-   *     rememberMe.recall(connect).then((user) {...});
+   *     var user = await rememberMe.recall(connect);
    *
    * It can return null to indicate nothing being recalled.
    */
-  Future recall(HttpConnect connect);
+  Future<dynamic> recall(HttpConnect connect);
 }
 /** The remember-me plug-in. It is used to redirect the user back to
  * the protected resource after logging in.

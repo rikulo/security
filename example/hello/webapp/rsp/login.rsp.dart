@@ -3,10 +3,10 @@
 part of hello_security;
 
 /** Template, login, for rendering the view. */
-Future login(HttpConnect connect) async { //#2
+Future login(HttpConnect connect) async {
   HttpResponse response = connect.response;
   if (!Rsp.init(connect, "text/html; charset=utf-8"))
-    return new Future.value();
+    return null;
 
   response.write("""<!DOCTYPE html>
 <html>
@@ -16,12 +16,12 @@ Future login(HttpConnect connect) async { //#2
   </head>
   <body>
   	<h1>Sign in</h1>
-"""); //#2
+""");
 
-  if (request.uri.queryParameters["retry"] != null) { //if#10
+  if (connect.request.uri.queryParameters["retry"] != null) {
 
     response.write("""    <div class="error">Incorrect username or password.</div>
-"""); //#11
+""");
   } //if
 
   response.write("""    <form action="/s_login" method="post" accept-charset="UTF-8">
@@ -34,7 +34,7 @@ Future login(HttpConnect connect) async { //#2
 	  <p>Usernames for testing: john (a normal user) and admin (an administrator). The password is 123.</p>
   </body>
 </html>
-"""); //#13
+""");
 
-  return new Future.value();
+  return null;
 }

@@ -7,7 +7,7 @@
   </head>
   <body>
   	<h1>Sign in</h1>
-    [:if request.uri.queryParameters["retry"] != null]
+    [:if connect.request.uri.queryParameters["retry"] != null]
     <div class="error">Incorrect username or password.</div>
     [/if]
     <form action="/s_login" method="post" accept-charset="UTF-8">
