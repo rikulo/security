@@ -125,8 +125,8 @@ abstract class Security {
    */
   factory Security(Authenticator authenticator, AccessControl accessControl, {
       Redirector redirector, RememberMe rememberMe, RememberUri rememberUri,
-      Future onLogin(HttpConnect connect, user, bool rememberMe),
-      Future onLogout(HttpConnect connect, user)})
+      FutureOr onLogin(HttpConnect connect, user, bool rememberMe),
+      FutureOr onLogout(HttpConnect connect, user)})
   => new _Security(authenticator, accessControl,
       redirector != null ? redirector: new Redirector(),
 			rememberMe,
@@ -219,7 +219,7 @@ abstract class AccessControl {
    * will be thrown. If you prefer other status code (such as 401), you can
    * throw an exception in this method.
    */
-  Future<bool> canAccess(HttpConnect connect, user);
+  FutureOr<bool> canAccess(HttpConnect connect, user);
 }
 
 /** The redirector to provide URI for different situations.

@@ -7,8 +7,8 @@ part of rikulo_security;
 ///Session attribute for storing the current user
 const String _ATTR_USER = "stream.user";
 
-typedef Future _LoginCallback(HttpConnect connect, user, bool rememberMe);
-typedef Future _LogoutCallback(HttpConnect connect, user);
+typedef FutureOr _LoginCallback(HttpConnect connect, user, bool rememberMe);
+typedef FutureOr _LogoutCallback(HttpConnect connect, user);
 
 /** The implementation of the security module.
  */

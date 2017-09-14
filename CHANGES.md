@@ -1,5 +1,10 @@
 #CHANGES
 
+**0.8.6**
+
+* `AccessControl.canAcess()` returns `FutureOr<bool>`
+* `onLogin` and `onLogout` callbacks return `FutureOr`
+
 **0.8.3**
 
 * Security.setLogin() introduces additional argument: resetSession

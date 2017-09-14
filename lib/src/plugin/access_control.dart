@@ -26,7 +26,7 @@ class SimpleAccessControl implements AccessControl {
   }
 
   @override
-  Future<bool> canAccess(HttpConnect connect, user) async {
+  FutureOr<bool> canAccess(HttpConnect connect, user) {
     final uri = connect.request.uri.path;
     for (final mapping in _mapping) {
       if (mapping.pattern.hasMatch(uri)) { //protected
