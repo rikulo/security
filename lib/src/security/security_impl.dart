@@ -28,7 +28,7 @@ class _Security<User> implements Security<User> {
       var user = currentUser(connect.request.session);
       if (user != null) {
         if (await authenticator.isSessionExpired(connect, user))
-          user = null;
+          _setCurrentUser(connect.request.session, user = null);
       } else if (rememberMe != null) { //1. remember me
         user = await rememberMe.recall(connect);
         if (user != null)
