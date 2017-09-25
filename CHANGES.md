@@ -1,5 +1,9 @@
 #CHANGES
 
+**0.8.7**
+
+* `Authenticator.isSessionExpired` introduced to invalidate a session if necessary
+
 **0.8.6**
 
 * `AccessControl.canAcess()` returns `FutureOr<bool>`

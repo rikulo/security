@@ -25,9 +25,11 @@ class _Security implements Security {
   }
   void _init() {
     _filter = (HttpConnect connect, Future chain(HttpConnect conn)) async {
-      //1. remember me
       var user = currentUser(connect.request.session);
-      if (user == null && rememberMe != null) {
+      if (user != null) {
+        if (await authenticator.isSessionExpired(connect, user))
+          user = null;
+      } else if (rememberMe != null) { //1. remember me
         user = await rememberMe.recall(connect);
         if (user != null)
           await setLogin(connect, user);

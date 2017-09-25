@@ -204,6 +204,13 @@ abstract class Authenticator {
    * in the new session after logout. If it carries null, nothing is preserved.
    */
   Future<Map> logout(HttpConnect connect, user) => null;
+
+  /** Check if the current session is expired.
+   *
+   * By default, it always return false. You can override it if you'd like
+   * to invalidate a session for, say, session hijacking.
+   */
+  FutureOr<bool> isSessionExpired(HttpConnect connect, user) => false;
 }
 
 /** The access control.

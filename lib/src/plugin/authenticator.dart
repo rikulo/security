@@ -22,7 +22,6 @@ class DummyAuthenticator extends Authenticator {
       return userInfo.user;
     throw new AuthenticationException("Incorrect username or password");
   }
-
 }
 
 /* The user used in [DummyAuthenticator]
