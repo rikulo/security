@@ -107,7 +107,7 @@ typedef Future LogoutHandler(HttpConnect connect, {bool redirect});
  *       "/.*": security.filter
  *     }).start();
  */
-abstract class Security {
+abstract class Security<User> {
   /** Constructor.
    *
    * * [redirector] - provides the URIs that will be used in different situations.
@@ -125,8 +125,8 @@ abstract class Security {
    */
   factory Security(Authenticator authenticator, AccessControl accessControl, {
       Redirector redirector, RememberMe rememberMe, RememberUri rememberUri,
-      FutureOr onLogin(HttpConnect connect, user, bool rememberMe),
-      FutureOr onLogout(HttpConnect connect, user)})
+      FutureOr onLogin(HttpConnect connect, User user, bool rememberMe),
+      FutureOr onLogout(HttpConnect connect, User user)})
   => new _Security(authenticator, accessControl,
       redirector != null ? redirector: new Redirector(),
 			rememberMe,
@@ -164,7 +164,7 @@ abstract class Security {
    * current one. By default, it is true for session fixation attack protection.
    * * [onLogin] - whether to call the onLogin callback. Default: true.
    */
-  Future setLogin(HttpConnect connect, user, {bool rememberMe,
+  Future setLogin(HttpConnect connect, User user, {bool rememberMe,
       bool resetSession: true, bool onLogin: true});
 
   ///The authenticator.
@@ -181,7 +181,7 @@ abstract class Security {
 
 /** The authenticator.
  */
-abstract class Authenticator {
+abstract class Authenticator<User> {
   /** Authenticates the given username and password.
    * The returned `Future` object shall carry the user object if successful.
    * If failed, throw an instance of [AuthenticationException]:
@@ -203,19 +203,21 @@ abstract class Authenticator {
    * * Returns a [Future] instance carrying the data you'd like to preserve
    * in the new session after logout. If it carries null, nothing is preserved.
    */
-  Future<Map> logout(HttpConnect connect, user) => null;
+  Future<Map> logout(HttpConnect connect, User user) => null;
 
   /** Check if the current session is expired.
    *
    * By default, it always return false. You can override it if you'd like
    * to invalidate a session for, say, session hijacking.
+   * 
+   * Note: when this method is called, [user] is never null.
    */
-  FutureOr<bool> isSessionExpired(HttpConnect connect, user) => false;
+  FutureOr<bool> isSessionExpired(HttpConnect connect, User user) => false;
 }
 
 /** The access control.
  */
-abstract class AccessControl {
+abstract class AccessControl<User> {
   /** Test if the given request is accessible by the given user.
    *
    * * [user] - the current user, or null if not logged in.
@@ -226,7 +228,7 @@ abstract class AccessControl {
    * will be thrown. If you prefer other status code (such as 401), you can
    * throw an exception in this method.
    */
-  FutureOr<bool> canAccess(HttpConnect connect, user);
+  FutureOr<bool> canAccess(HttpConnect connect, User user);
 }
 
 /** The redirector to provide URI for different situations.
@@ -283,7 +285,7 @@ class Redirector {
  * > Notice that [save] was called only if the `s_remember_me` parameter is
  * specified with `true`.
  */
-abstract class RememberMe {
+abstract class RememberMe<User> {
   /** Saves the given user for the given connection, such that it can be
    * recalled later when [recall] is called. If [rememberMe] is false,
    * this method shall clean up the information saved in the previous
@@ -301,7 +303,7 @@ abstract class RememberMe {
    * * It returns a [Future] object to indicate when it completes.
    * If it completes immediately, it can return null.
    */
-  Future save(HttpConnect connect, user, bool rememberMe);
+  Future save(HttpConnect connect, User user, bool rememberMe);
   /** It returns a Future object carrying the user if the given connection
    * is established by a user that was saved in [save]. Thus, caller can do:
    *

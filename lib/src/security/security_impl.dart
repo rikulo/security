@@ -7,12 +7,12 @@ part of rikulo_security;
 ///Session attribute for storing the current user
 const String _ATTR_USER = "stream.user";
 
-typedef FutureOr _LoginCallback(HttpConnect connect, user, bool rememberMe);
-typedef FutureOr _LogoutCallback(HttpConnect connect, user);
+typedef FutureOr _LoginCallback<User>(HttpConnect connect, User user, bool rememberMe);
+typedef FutureOr _LogoutCallback<User>(HttpConnect connect, User user);
 
 /** The implementation of the security module.
  */
-class _Security implements Security {
+class _Security<User> implements Security<User> {
   RequestFilter _filter;
   LoginHandler _login;
   LogoutHandler _logout; //we add a named parameter so we can't use RequestHandler
@@ -118,7 +118,7 @@ class _Security implements Security {
   }
 
   //called by _filter to authorize and chain
-  Future _authorize(HttpConnect connect, user, Future chain(HttpConnect conn)) async {
+  Future _authorize(HttpConnect connect, User user, Future chain(HttpConnect conn)) async {
     //1. check accessibility
     if (!await accessControl.canAccess(connect, user)) {
       if (user == null) {
@@ -134,7 +134,7 @@ class _Security implements Security {
   }
 
   @override
-  Future setLogin(HttpConnect connect, user, {bool rememberMe,
+  Future setLogin(HttpConnect connect, User user, {bool rememberMe,
       bool resetSession: true, bool onLogin: true}) async {
     //5. session fixation attack protection
     var session = connect.request.session;
