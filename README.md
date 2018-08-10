@@ -4,7 +4,7 @@ Rikulo Security is a lightweight and highly customizable authentication and acce
 
 * [Home](http://rikulo.org/projects/stream)
 * [Documentation](http://docs.rikulo.org/stream/latest/Add-ons/Rikulo_Security)
-* [API Reference](http://www.dartdocs.org/documentation/rikulo_security/0.8.8)
+* [API Reference](http://www.dartdocs.org/documentation/rikulo_security/1.0.0)
 * [Discussion](http://stackoverflow.com/questions/tagged/rikulo)
 * [Source Code Repos](https://github.com/rikulo/security)
 * [Issues](https://github.com/rikulo/security/issues)
@@ -65,3 +65,4 @@ If you are new to Git or GitHub, please read [this guide](https://help.github.co
 ## Who Uses
 
 * [Quire](https://quire.io) - a simple, collaborative, multi-level task management tool.
+* [Keikai](https://keikai.io) - a sophisticated spreadsheet for big data

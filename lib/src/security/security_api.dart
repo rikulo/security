@@ -7,13 +7,13 @@ part of rikulo_security;
 /** Returns the current user, or null if not authenticated.
  * It is the same object returned by [Authenticator]'s `authenticate`.
  */
-currentUser(HttpSession session) => session[_ATTR_USER];
+currentUser(HttpSession session) => session[_attrUser];
 /// Sets the current user.
 void _setCurrentUser(HttpSession session, user) {
   if (user != null)
-    session[_ATTR_USER] = user;
+    session[_attrUser] = user;
   else
-    session.remove(_ATTR_USER);
+    session.remove(_attrUser);
 }
 
 /** The login render handler that is returned by [Security.login].
@@ -326,7 +326,7 @@ class RememberUri {
   void save(HttpConnect connect) {
     final request = connect.request;
     if (request.method.toUpperCase() == "GET")
-      request.session[_ATTR_REMEMBER_URI] = request.uri.toString();
+      request.session[_attrRememberUri] = request.uri.toString();
   }
   /** Returns the previous saved URI, or null if nothing was saved.
    *
@@ -334,15 +334,17 @@ class RememberUri {
    * It is empty if you invoke `security.login` directly (s.t., with Ajax login).
    */
   String recall(HttpConnect connect, Map<String, String> parameters)
-  => connect.request.session[_ATTR_REMEMBER_URI];
+  => connect.request.session[_attrRememberUri];
 }
 ///Session attribute for storing the original URI
-const _ATTR_REMEMBER_URI = "stream.remember.uri";
+const _attrRememberUri = "stream.remember.uri";
 
 /** The authentication being invalid.
  */
 class AuthenticationException implements Exception {
   final String message;
   const AuthenticationException([this.message=""]);
+
+  @override
   String toString() => "AuthenticationException: $message";
 }

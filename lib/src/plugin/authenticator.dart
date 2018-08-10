@@ -8,7 +8,7 @@ part of rikulo_security_plugin;
  * It is definitely not a good idea to use this class in the production.
  */
 class DummyAuthenticator extends Authenticator {
-  final Map<String, _DummyUserInfo> _userInfos = new Map();
+  final _userInfos = new HashMap<String, _DummyUserInfo>();
 
   ///Adds a user.
   void addUser(String username, String password, Iterable<String> roles) {
@@ -34,11 +34,12 @@ class SimpleUser {
   final String username;
 
   SimpleUser(this.username, Iterable<String> roles)
-  : _roles = roles is Set ? roles: new Set.from(roles);
+  : _roles = roles is Set ? roles: new Set<String>.from(roles);
 
   ///The roles that this user has.
   Set<String> get roles => _roles;
 
+  @override
   String toString() => "$username";
 }
 

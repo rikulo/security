@@ -5,7 +5,7 @@
 part of rikulo_security;
 
 ///Session attribute for storing the current user
-const String _ATTR_USER = "stream.user";
+const String _attrUser = "stream.user";
 
 typedef FutureOr _LoginCallback<User>(HttpConnect connect, User user, bool rememberMe);
 typedef FutureOr _LogoutCallback<User>(HttpConnect connect, User user);
@@ -142,7 +142,7 @@ class _Security<User> implements Security<User> {
     //5. session fixation attack protection
     var session = connect.request.session;
     if (resetSession) {
-      final data = new Map.from(session..remove(_ATTR_REMEMBER_URI));
+      final data = new Map.from(session..remove(_attrRememberUri));
       session.destroy();
       session = connect.request.session; //re-create
       data.forEach((key, value) {

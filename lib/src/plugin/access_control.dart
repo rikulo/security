@@ -59,7 +59,7 @@ class _ACMapping {
 
   _ACMapping(String uri, Iterable<String> roles)
   : pattern = new RegExp("^$uri\$"),
-    allowed = roles is Set ? roles: new Set.from(roles) {
+    allowed = roles is Set ? roles: new Set<String>.from(roles) {
       if (uri.isEmpty || "/.[(".indexOf(uri[0]) < 0)
         throw new ServerError("URI pattern must start with '/', '.', '[' or '('; not '$uri'");
     }
