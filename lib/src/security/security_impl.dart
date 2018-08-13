@@ -16,8 +16,9 @@ class _Security<User> implements Security<User> {
   RequestFilter _filter;
   LoginHandler _login;
   LogoutHandler _logout; //we add a named parameter so we can't use RequestHandler
-  _LoginCallback _onLogin;
-  _LogoutCallback _onLogout;
+  _LoginCallback<User> _onLogin;
+  _LogoutCallback<User> _onLogout;
+
 
   _Security(this.authenticator, this.accessControl, this.redirector,
       this.rememberMe, this.rememberUri, this._onLogin, this._onLogout) {
