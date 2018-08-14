@@ -1,5 +1,9 @@
 #CHANGES
 
+**1.0.0**
+
+* Upgrade to Dart 2
+
 **0.8.7**
 
 * `Authenticator.isSessionExpired` introduced to invalidate a session if necessary
