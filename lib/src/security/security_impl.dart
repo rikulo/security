@@ -26,7 +26,7 @@ class _Security<User> implements Security<User> {
   }
   void _init() {
     _filter = (HttpConnect connect, Future chain(HttpConnect conn)) async {
-      var user = currentUser(connect.request.session);
+      User user = currentUser(connect.request.session);
       if (user != null) {
         if (await authenticator.isSessionExpired(connect, user)) {
           final session = connect.request.session;
@@ -97,7 +97,7 @@ class _Security<User> implements Security<User> {
     };
 
     _logout = (HttpConnect connect, {bool redirect: true}) async {
-      var user = currentUser(connect.request.session);
+      User user = currentUser(connect.request.session);
       if (user == null) {
         if (redirect)
           connect.redirect(redirector.getLogoutTarget(connect));
@@ -170,9 +170,9 @@ class _Security<User> implements Security<User> {
   LogoutHandler get logout => _logout;
 
   @override
-  final Authenticator authenticator;
+  final Authenticator<User> authenticator;
   @override
-  final AccessControl accessControl;
+  final AccessControl<User> accessControl;
   @override
   final Redirector redirector;
   @override

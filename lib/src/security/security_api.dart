@@ -7,7 +7,7 @@ part of rikulo_security;
 /** Returns the current user, or null if not authenticated.
  * It is the same object returned by [Authenticator]'s `authenticate`.
  */
-currentUser(HttpSession session) => session[_attrUser];
+User currentUser<User>(HttpSession session) => session[_attrUser] as User;
 /// Sets the current user.
 void _setCurrentUser(HttpSession session, user) {
   if (user != null)
@@ -123,7 +123,7 @@ abstract class Security<User> {
    * it completes immediately. Otherwise, return a [Future] instance to indicate
    * when it completes.
    */
-  factory Security(Authenticator authenticator, AccessControl accessControl, {
+  factory Security(Authenticator<User> authenticator, AccessControl<User> accessControl, {
       Redirector redirector, RememberMe rememberMe, RememberUri rememberUri,
       FutureOr onLogin(HttpConnect connect, User user, bool rememberMe),
       FutureOr onLogout(HttpConnect connect, User user)})
@@ -193,7 +193,7 @@ abstract class Authenticator<User> {
    *       return new User(username, roles); //any non-null object
    *     });
    */
-  Future login(HttpConnect connect, String username, String password);
+  Future<User> login(HttpConnect connect, String username, String password);
   /** Logout.
    *
    * The default implementation does nothing but returns `null`.
@@ -311,7 +311,7 @@ abstract class RememberMe<User> {
    *
    * It can return null to indicate nothing being recalled.
    */
-  Future<dynamic> recall(HttpConnect connect);
+  Future<User> recall<User>(HttpConnect connect);
 }
 /** The remember-me plug-in. It is used to redirect the user back to
  * the protected resource after logging in.
@@ -334,7 +334,7 @@ class RememberUri {
    * It is empty if you invoke `security.login` directly (s.t., with Ajax login).
    */
   String recall(HttpConnect connect, Map<String, String> parameters)
-  => connect.request.session[_attrRememberUri];
+  => connect.request.session[_attrRememberUri] as String;
 }
 ///Session attribute for storing the original URI
 const _attrRememberUri = "stream.remember.uri";

@@ -39,7 +39,7 @@ class SimpleAccessControl implements AccessControl {
             col2 = mapping.allowed;
           } else {
             col1 = mapping.allowed;
-            col2 = roles;
+            col2 = roles as Iterable<String>;
           }
 
           for (final role in col2)
@@ -59,7 +59,7 @@ class _ACMapping {
 
   _ACMapping(String uri, Iterable<String> roles)
   : pattern = new RegExp("^$uri\$"),
-    allowed = roles is Set ? roles: new Set<String>.from(roles) {
+    allowed = roles is Set<String> ? roles: new Set<String>.from(roles) {
       if (uri.isEmpty || "/.[(".indexOf(uri[0]) < 0)
         throw new ServerError("URI pattern must start with '/', '.', '[' or '('; not '$uri'");
     }

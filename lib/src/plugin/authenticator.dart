@@ -34,7 +34,7 @@ class SimpleUser {
   final String username;
 
   SimpleUser(this.username, Iterable<String> roles)
-  : _roles = roles is Set ? roles: new Set<String>.from(roles);
+  : _roles = roles is Set<String> ? roles: new Set<String>.from(roles);
 
   ///The roles that this user has.
   Set<String> get roles => _roles;

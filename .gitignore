@@ -25,3 +25,4 @@ pubspec.lock
 .buildlog
 .settings/com.google.dart.tools.core.prefs
 .settings/org.eclipse.ltk.core.refactoring.prefs
+.dart_tool
