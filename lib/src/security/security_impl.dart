@@ -176,7 +176,7 @@ class _Security<User> implements Security<User> {
   @override
   final Redirector redirector;
   @override
-  final RememberMe rememberMe;
+  final RememberMe<User> rememberMe;
   @override
   final RememberUri rememberUri;
 }

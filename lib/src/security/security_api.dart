@@ -124,7 +124,7 @@ abstract class Security<User> {
    * when it completes.
    */
   factory Security(Authenticator<User> authenticator, AccessControl<User> accessControl, {
-      Redirector redirector, RememberMe rememberMe, RememberUri rememberUri,
+      Redirector redirector, RememberMe<User> rememberMe, RememberUri rememberUri,
       FutureOr onLogin(HttpConnect connect, User user, bool rememberMe),
       FutureOr onLogout(HttpConnect connect, User user)})
   => new _Security(authenticator, accessControl,
@@ -311,7 +311,7 @@ abstract class RememberMe<User> {
    *
    * It can return null to indicate nothing being recalled.
    */
-  Future<User> recall<User>(HttpConnect connect);
+  Future<User> recall(HttpConnect connect);
 }
 /** The remember-me plug-in. It is used to redirect the user back to
  * the protected resource after logging in.
