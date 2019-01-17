@@ -4,7 +4,7 @@ Rikulo Security is a lightweight and highly customizable authentication and acce
 
 * [Home](http://rikulo.org/projects/stream)
 * [Documentation](http://docs.rikulo.org/stream/latest/Add-ons/Rikulo_Security)
-* [API Reference](http://www.dartdocs.org/documentation/rikulo_security/1.0.2)
+* [API Reference](http://www.dartdocs.org/documentation/rikulo_security/1.1.0)
 * [Discussion](http://stackoverflow.com/questions/tagged/rikulo)
 * [Source Code Repos](https://github.com/rikulo/security)
 * [Issues](https://github.com/rikulo/security/issues)
