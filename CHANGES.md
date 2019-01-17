@@ -1,5 +1,9 @@
 #CHANGES
 
+**1.1.0**
+
+* Security.switchLogin and switchBack added
+
 **1.0.0**
 
 * Upgrade to Dart 2

@@ -167,6 +167,27 @@ abstract class Security<User> {
   Future setLogin(HttpConnect connect, User user, {bool rememberMe,
       bool resetSession: true, bool onLogin: true});
 
+  /** Switches to the given [user].
+   * Unlike [setLogin], you can switch back easily with [switchBack].
+   * 
+   * ```
+   * final backup = await switchLogin(connect, user, onLogin: false);
+   * try {
+   *   ...
+   * } finally {
+   *   switchBack(connect, backup);
+   * }
+   * ```
+   */
+  Future<Map<String, dynamic>> switchLogin(HttpConnect connect, User user,
+      {bool onLogin: true});
+  /** Switches back.
+   * It is used with [switchLogin].
+   * 
+   * * [data] - the backup data returned by [switchLogin].
+   */
+  void switchBack(HttpConnect conect, Map<String, dynamic> data);
+
   ///The authenticator.
   Authenticator get authenticator;
   ///The access control.

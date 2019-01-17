@@ -143,12 +143,11 @@ class _Security<User> implements Security<User> {
     //5. session fixation attack protection
     var session = connect.request.session;
     if (resetSession) {
-      final data = new Map.from(session..remove(_attrRememberUri));
+      final backup = new HashMap<String, dynamic>.from(
+          session..remove(_attrRememberUri));
       session.destroy();
       session = connect.request.session; //re-create
-      data.forEach((key, value) {
-        session[key] = value;
-      });
+      session.addAll(backup);
     }
 
     //5a. store the user
@@ -160,6 +159,25 @@ class _Security<User> implements Security<User> {
 
     if (onLogin && _onLogin != null)
       return _onLogin(connect, user, rememberMe);
+  }
+
+  @override
+  Future<Map<String, dynamic>> switchLogin(HttpConnect connect, User user,
+      {bool onLogin: true}) async {
+    final session = connect.request.session;
+    final backup = new HashMap<String, dynamic>.from(session);
+    session.clear();
+
+    _setCurrentUser(session, user);
+
+    if (onLogin && _onLogin != null)
+      await _onLogin(connect, user, null);
+    return backup;
+  }
+  @override
+  void switchBack(HttpConnect connect, Map<String, dynamic> data) {
+    final session = connect.request.session;
+    session..clear()..addAll(data);
   }
 
   @override
