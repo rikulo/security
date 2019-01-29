@@ -1,8 +1,12 @@
 #CHANGES
 
+**1.1.1**
+
+* `Security.switchLogin` supports the `resetSession` argument
+
 **1.1.0**
 
-* Security.switchLogin and switchBack added
+* `Security.switchLogin` and `switchBack` added
 
 **1.0.0**
 

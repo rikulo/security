@@ -163,10 +163,15 @@ class _Security<User> implements Security<User> {
 
   @override
   Future<Map<String, dynamic>> switchLogin(HttpConnect connect, User user,
-      {bool onLogin: true}) async {
-    final session = connect.request.session;
+      {bool onLogin: true, bool resetSession}) async {
+    var session = connect.request.session;
     final backup = new HashMap<String, dynamic>.from(session);
-    session.clear();
+    if (resetSession ?? !session.isNew) {
+      session.destroy();
+      session = connect.request.session;
+    } else {
+      session.clear();
+    }
 
     _setCurrentUser(session, user);
 
