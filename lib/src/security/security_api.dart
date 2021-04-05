@@ -7,7 +7,7 @@ part of rikulo_security;
 /** Returns the current user, or null if not authenticated.
  * It is the same object returned by [Authenticator]'s `authenticate`.
  */
-User currentUser<User>(HttpSession session) => session[_attrUser] as User;
+User? currentUser<User>(HttpSession session) => session[_attrUser] as User?;
 /// Sets the current user.
 void _setCurrentUser(HttpSession session, user) {
   if (user != null)
@@ -124,13 +124,13 @@ abstract class Security<User> {
    * when it completes.
    */
   factory Security(Authenticator<User> authenticator, AccessControl<User> accessControl, {
-      Redirector redirector, RememberMe<User> rememberMe, RememberUri rememberUri,
-      FutureOr onLogin(HttpConnect connect, User user, bool rememberMe),
-      FutureOr onLogout(HttpConnect connect, User user)})
+      Redirector? redirector, RememberMe<User>? rememberMe,
+      RememberUri? rememberUri,
+      FutureOr onLogin(HttpConnect connect, User user, bool? rememberMe)?,
+      FutureOr onLogout(HttpConnect connect, User user)?})
   => new _Security(authenticator, accessControl,
-      redirector != null ? redirector: new Redirector(),
-			rememberMe,
-      rememberUri != null ? rememberUri: new RememberUri(),
+      redirector ?? new Redirector(), rememberMe,
+      rememberUri ?? new RememberUri(),
       onLogin, onLogout);
 
   /** The filter used to configure Stream server's filter mapping.
@@ -199,7 +199,7 @@ abstract class Security<User> {
   ///The redirector.
   Redirector get redirector;
   ///The remember me.
-  RememberMe get rememberMe;
+  RememberMe? get rememberMe;
   ///The remember URI.
   RememberUri get rememberUri;
 }
@@ -228,7 +228,7 @@ abstract class Authenticator<User> {
    * * Returns a [Future] instance carrying the data you'd like to preserve
    * in the new session after logout. If it carries null, nothing is preserved.
    */
-  Future<Map> logout(HttpConnect connect, User user) => null;
+  Future<Map>? logout(HttpConnect connect, User user) => null;
 
   /** Check if the current session is expired.
    *
@@ -253,7 +253,7 @@ abstract class AccessControl<User> {
    * will be thrown. If you prefer other status code (such as 401), you can
    * throw an exception in this method.
    */
-  FutureOr<bool> canAccess(HttpConnect connect, User user);
+  FutureOr<bool> canAccess(HttpConnect connect, User? user);
 }
 
 /** The redirector to provide URI for different situations.
@@ -295,7 +295,7 @@ class Redirector {
    * before redirecting to the login page. It is null, if the user
    * accesses the login page directly.
    */
-  String getLoginTarget(HttpConnect connect, String originalUri)
+  String getLoginTarget(HttpConnect connect, String? originalUri)
   => originalUri != null ? originalUri: "/";
 
   /** Returns the URI that the user will be taken to after logging out.

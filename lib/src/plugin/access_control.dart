@@ -11,10 +11,10 @@ part of rikulo_security_plugin;
  * For better performance, it is suggested to be `Set<String>`.
  */
 class SimpleAccessControl implements AccessControl {
-  final List<_ACMapping> _mapping = [];
+  final _mapping = <_ACMapping>[];
 
-  SimpleAccessControl([Map<String, Iterable<String>> mapping]) {
-    mapping.forEach((uri, roles) => add(uri, roles));
+  SimpleAccessControl([Map<String, Iterable<String>>? mapping]) {
+    mapping?.forEach((uri, roles) => add(uri, roles));
   }
 
   /** Adds a protected resource.

@@ -7,63 +7,61 @@ part of rikulo_security;
 ///Session attribute for storing the current user
 const String _attrUser = "stream.user";
 
-typedef FutureOr _LoginCallback<User>(HttpConnect connect, User user, bool rememberMe);
+typedef FutureOr _LoginCallback<User>(HttpConnect connect, User user, bool? rememberMe);
 typedef FutureOr _LogoutCallback<User>(HttpConnect connect, User user);
 
 /** The implementation of the security module.
  */
 class _Security<User> implements Security<User> {
-  RequestFilter _filter;
-  LoginHandler _login;
-  LogoutHandler _logout; //we add a named parameter so we can't use RequestHandler
-  _LoginCallback<User> _onLogin;
-  _LogoutCallback<User> _onLogout;
-
+  _LoginCallback<User>? _onLogin;
+  _LogoutCallback<User>? _onLogout;
 
   _Security(this.authenticator, this.accessControl, this.redirector,
-      this.rememberMe, this.rememberUri, this._onLogin, this._onLogout) {
-    _init();
-  }
-  void _init() {
-    _filter = (HttpConnect connect, Future chain(HttpConnect conn)) async {
-      User user = currentUser(connect.request.session);
+      this.rememberMe, this.rememberUri, this._onLogin, this._onLogout);
+
+  @override
+  late final RequestFilter filter =
+    (HttpConnect connect, Future chain(HttpConnect conn)) async {
+      User? user = currentUser(connect.request.session);
       if (user != null) {
         if (await authenticator.isSessionExpired(connect, user)) {
           final session = connect.request.session;
           _setCurrentUser(session, user = null);
           session.destroy();
         }
-      } else if (rememberMe != null) { //1. remember me
-        user = await rememberMe.recall(connect);
-        if (user != null)
-          await setLogin(connect, user);
+      } else {
+        final reme = rememberMe;
+        if (reme != null) { //1. remember me
+          user = await reme.recall(connect);
+          if (user != null)
+            await setLogin(connect, user);
+        }
       }
 
       //2-3: authorize and chain
       return _authorize(connect, user, chain);
     };
-
-    _login = (HttpConnect connect, {String username, String password,
-        bool rememberMe, bool redirect: true,
+  @override
+  late final LoginHandler login =
+    (HttpConnect connect, {String? username, String? password,
+        bool? rememberMe, bool redirect: true,
         bool handleAuthenticationException: true}) async {
-      String uri;
+      String? uri;
       Map<String, String> params;
       redirect = redirect != false; //including null
 
       try {
         //1. logout first
-        await _logout(connect, redirect: false);
+        await logout(connect, redirect: false);
 
         if (username == null) {
           //2. get login information
           //FORM-based login  (note: we ignore query parameters)
-          final params = await HttpUtil.decodePostedParameters(connect.request);
+          params = await HttpUtil.decodePostedParameters(connect.request);
           username = params["s_username"];
           if (username == null)
             username = "";
           password = params["s_password"];
-          if (password == null)
-            password = "";
           if (rememberMe == null)
             rememberMe = params["s_rememberMe"] == "true";
         } else {
@@ -77,7 +75,7 @@ class _Security<User> implements Security<User> {
           uri = rememberUri.recall(connect, params);
 
         //4. login
-        final user = await authenticator.login(connect, username, password);
+        final user = await authenticator.login(connect, username, password ?? "");
 
         //5 session/cookie handling
         await setLogin(connect, user, rememberMe: rememberMe);
@@ -88,7 +86,7 @@ class _Security<User> implements Security<User> {
 
       } on AuthenticationException catch (_) {
         if (handleAuthenticationException && redirect) {
-          uri = redirector.getLoginFailed(connect, username, rememberMe);
+          uri = redirector.getLoginFailed(connect, username ?? "", rememberMe ?? false);
           return redirector.isRedirectOnFail ?
             connect.redirect(uri): connect.forward(uri);
         }
@@ -96,8 +94,10 @@ class _Security<User> implements Security<User> {
       }
     };
 
-    _logout = (HttpConnect connect, {bool redirect: true}) async {
-      User user = currentUser(connect.request.session);
+  @override
+  late final LogoutHandler logout =
+    (HttpConnect connect, {bool redirect: true}) async {
+      var user = currentUser<User>(connect.request.session);
       if (user == null) {
         if (redirect)
           connect.redirect(redirector.getLogoutTarget(connect));
@@ -113,16 +113,14 @@ class _Security<User> implements Security<User> {
         _setCurrentUser(session, null); //be safe in case data contains it
       }
 
-      if (_onLogout != null)
-        await _onLogout(connect, user);
+      await _onLogout?.call(connect, user);
 
       if (redirect)
         connect.redirect(redirector.getLogoutTarget(connect));
     };
-  }
 
   //called by _filter to authorize and chain
-  Future _authorize(HttpConnect connect, User user, Future chain(HttpConnect conn)) async {
+  Future _authorize(HttpConnect connect, User? user, Future chain(HttpConnect conn)) async {
     //1. check accessibility
     if (!await accessControl.canAccess(connect, user)) {
       if (user == null) {
@@ -138,7 +136,7 @@ class _Security<User> implements Security<User> {
   }
 
   @override
-  Future setLogin(HttpConnect connect, User user, {bool rememberMe,
+  Future setLogin(HttpConnect connect, User user, {bool? rememberMe,
       bool resetSession: true, bool onLogin: true}) async {
     //5. session fixation attack protection
     var session = connect.request.session;
@@ -154,16 +152,17 @@ class _Security<User> implements Security<User> {
     _setCurrentUser(session, user);
 
     //6. remember me
-    if (this.rememberMe != null && rememberMe != null) //null => ignored
-      await this.rememberMe.save(connect, user, rememberMe);
+    final reme = this.rememberMe;
+    if (reme != null && rememberMe != null) //null => ignored
+      await reme.save(connect, user, rememberMe);
 
-    if (onLogin && _onLogin != null)
-      return _onLogin(connect, user, rememberMe);
+    if (onLogin)
+      return _onLogin?.call(connect, user, rememberMe);
   }
 
   @override
   Future<Map<String, dynamic>> switchLogin(HttpConnect connect, User user,
-      {bool onLogin: true, bool resetSession}) async {
+      {bool onLogin: true, bool? resetSession}) async {
     var session = connect.request.session;
     final backup = new HashMap<String, dynamic>.from(session);
     if (resetSession ?? !session.isNew) {
@@ -175,8 +174,8 @@ class _Security<User> implements Security<User> {
 
     _setCurrentUser(session, user);
 
-    if (onLogin && _onLogin != null)
-      await _onLogin(connect, user, null);
+    if (onLogin)
+      await _onLogin?.call(connect, user, null);
     return backup;
   }
   @override
@@ -186,20 +185,13 @@ class _Security<User> implements Security<User> {
   }
 
   @override
-  RequestFilter get filter => _filter;
-  @override
-  LoginHandler get login => _login;
-  @override
-  LogoutHandler get logout => _logout;
-
-  @override
   final Authenticator<User> authenticator;
   @override
   final AccessControl<User> accessControl;
   @override
   final Redirector redirector;
   @override
-  final RememberMe<User> rememberMe;
+  final RememberMe<User>? rememberMe;
   @override
   final RememberUri rememberUri;
 }
