@@ -1,5 +1,9 @@
 #CHANGES
 
+**1.1.2**
+
+* `Security.filter`, `login` and `logout` are instant methods instead of closures.
+
 **1.1.1**
 
 * `Security.switchLogin` supports the `resetSession` argument
