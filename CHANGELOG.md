@@ -1,5 +1,9 @@
 #CHANGES
 
+**2.2.0**
+
+* Migrate to null safety
+
 **1.1.1**
 
 * `Security.switchLogin` supports the `resetSession` argument
