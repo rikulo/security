@@ -72,9 +72,12 @@ abstract class Security<User> {
       rememberUri ?? new RememberUri(),
       onLogin, onLogout);
 
-  /** The filter used to configure Stream server's filter mapping.
-   */
+  /// The filter used to configure Stream server's filter mapping.
+  ///
+  /// It must be specified in `filterMapping` when instaiating [StreamSerer]
+  /// to protect the URLs that requires users to sign in first.
   Future filter(HttpConnect connect, Future chain(HttpConnect conn));
+
   /** The handler used to configure Stream server's URI mapping for handling
    * the login.
    *
@@ -106,7 +109,7 @@ abstract class Security<User> {
    * It is meaningful
    * only if the constructor is called with a [RememberMe] instance.
    * * [redirect] - whether to redirect back to the original URI
-   * (`connect.request.uri`). If omitted, it means true.
+   * (`connect.request.uri`).
    * Notice: if [redirect] is false, the caller has to handle
    * [AuthenticationException] in `catchError` (if true, it is handled automatically).
    *
@@ -118,8 +121,8 @@ abstract class Security<User> {
    * * It returns a [Future] object (never null) to indicate when it completes.
    */
   Future login(HttpConnect connect, {
-      String username, String password, bool rememberMe, bool redirect,
-      bool handleAuthenticationException});
+      String? username, String? password, bool? rememberMe,
+      bool redirect: true, bool handleAuthenticationException: true});
 
   /** The handler used to configure Stream server's URI mapping for handling
    * the logout.
@@ -135,11 +138,11 @@ abstract class Security<User> {
    *     security.logout(connect, redirect: false);
    *
    * * [redirect] - whether to redirect to the default web page (defined in
-   * [Redirector]). If omitted, it means true.
+   * [Redirector]).
    *
    * * It returns a [Future] object (never null) to indicate when it completes.
    */
-  Future logout(HttpConnect connect, {bool redirect});
+  Future logout(HttpConnect connect, {bool redirect: true});
 
   /** Notifies Rikulo Security that the given user logged in.
    * It is useful if you allows the user to login automatically, such as
