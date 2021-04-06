@@ -20,104 +20,102 @@ class _Security<User> implements Security<User> {
       this.rememberMe, this.rememberUri, this._onLogin, this._onLogout);
 
   @override
-  late final RequestFilter filter =
-    (HttpConnect connect, Future chain(HttpConnect conn)) async {
-      User? user = currentUser(connect.request.session);
-      if (user != null) {
-        if (await authenticator.isSessionExpired(connect, user)) {
-          final session = connect.request.session;
-          _setCurrentUser(session, user = null);
-          session.destroy();
-        }
+  Future filter(HttpConnect connect, Future chain(HttpConnect conn)) async {
+    User? user = currentUser(connect.request.session);
+    if (user != null) {
+      if (await authenticator.isSessionExpired(connect, user)) {
+        final session = connect.request.session;
+        _setCurrentUser(session, user = null);
+        session.destroy();
+      }
+    } else {
+      final reme = rememberMe;
+      if (reme != null) { //1. remember me
+        user = await reme.recall(connect);
+        if (user != null)
+          await setLogin(connect, user);
+      }
+    }
+
+    //2-3: authorize and chain
+    return _authorize(connect, user, chain);
+  }
+
+  @override
+  Future login(HttpConnect connect, {String? username, String? password,
+      bool? rememberMe, bool redirect: true,
+      bool handleAuthenticationException: true}) async {
+    String? uri;
+    Map<String, String> params;
+    redirect = redirect != false; //including null
+
+    try {
+      //1. logout first
+      await logout(connect, redirect: false);
+
+      if (username == null) {
+        //2. get login information
+        //FORM-based login  (note: we ignore query parameters)
+        params = await HttpUtil.decodePostedParameters(connect.request);
+        username = params["s_username"];
+        if (username == null)
+          username = "";
+        password = params["s_password"];
+        if (rememberMe == null)
+          rememberMe = params["s_rememberMe"] == "true";
       } else {
-        final reme = rememberMe;
-        if (reme != null) { //1. remember me
-          user = await reme.recall(connect);
-          if (user != null)
-            await setLogin(connect, user);
-        }
+        rememberMe = rememberMe == true; //excluding null
+        params = new HashMap<String, String>();
       }
 
-      //2-3: authorize and chain
-      return _authorize(connect, user, chain);
-    };
-  @override
-  late final LoginHandler login =
-    (HttpConnect connect, {String? username, String? password,
-        bool? rememberMe, bool redirect: true,
-        bool handleAuthenticationException: true}) async {
-      String? uri;
-      Map<String, String> params;
-      redirect = redirect != false; //including null
+      //3. retrieve the URI for redirecting
+      //we have to do it before login since login will re-create a session
+      if (redirect)
+        uri = rememberUri.recall(connect, params);
 
-      try {
-        //1. logout first
-        await logout(connect, redirect: false);
+      //4. login
+      final user = await authenticator.login(connect, username, password ?? "");
 
-        if (username == null) {
-          //2. get login information
-          //FORM-based login  (note: we ignore query parameters)
-          params = await HttpUtil.decodePostedParameters(connect.request);
-          username = params["s_username"];
-          if (username == null)
-            username = "";
-          password = params["s_password"];
-          if (rememberMe == null)
-            rememberMe = params["s_rememberMe"] == "true";
-        } else {
-          rememberMe = rememberMe == true; //excluding null
-          params = new HashMap<String, String>();
-        }
+      //5 session/cookie handling
+      await setLogin(connect, user, rememberMe: rememberMe);
 
-        //3. retrieve the URI for redirecting
-        //we have to do it before login since login will re-create a session
-        if (redirect)
-          uri = rememberUri.recall(connect, params);
+      //6. redirect
+      if (redirect)
+        connect.redirect(redirector.getLoginTarget(connect, uri));
 
-        //4. login
-        final user = await authenticator.login(connect, username, password ?? "");
-
-        //5 session/cookie handling
-        await setLogin(connect, user, rememberMe: rememberMe);
-
-        //6. redirect
-        if (redirect)
-          connect.redirect(redirector.getLoginTarget(connect, uri));
-
-      } on AuthenticationException catch (_) {
-        if (handleAuthenticationException && redirect) {
-          uri = redirector.getLoginFailed(connect, username ?? "", rememberMe ?? false);
-          return redirector.isRedirectOnFail ?
-            connect.redirect(uri): connect.forward(uri);
-        }
-        rethrow;
+    } on AuthenticationException catch (_) {
+      if (handleAuthenticationException && redirect) {
+        uri = redirector.getLoginFailed(connect, username ?? "", rememberMe ?? false);
+        return redirector.isRedirectOnFail ?
+          connect.redirect(uri): connect.forward(uri);
       }
-    };
+      rethrow;
+    }
+  }
 
   @override
-  late final LogoutHandler logout =
-    (HttpConnect connect, {bool redirect: true}) async {
-      var user = currentUser<User>(connect.request.session);
-      if (user == null) {
-        if (redirect)
-          connect.redirect(redirector.getLogoutTarget(connect));
-        return;
-      }
-
-      final data = await authenticator.logout(connect, user);
-      final session = connect.request.session..clear();
-      if (data != null) {
-        data.forEach((key, value) {
-          session[key] = value;
-        });
-        _setCurrentUser(session, null); //be safe in case data contains it
-      }
-
-      await _onLogout?.call(connect, user);
-
+  Future logout(HttpConnect connect, {bool redirect: true}) async {
+    var user = currentUser<User>(connect.request.session);
+    if (user == null) {
       if (redirect)
         connect.redirect(redirector.getLogoutTarget(connect));
-    };
+      return;
+    }
+
+    final data = await authenticator.logout(connect, user);
+    final session = connect.request.session..clear();
+    if (data != null) {
+      data.forEach((key, value) {
+        session[key] = value;
+      });
+      _setCurrentUser(session, null); //be safe in case data contains it
+    }
+
+    await _onLogout?.call(connect, user);
+
+    if (redirect)
+      connect.redirect(redirector.getLogoutTarget(connect));
+  }
 
   //called by _filter to authorize and chain
   Future _authorize(HttpConnect connect, User? user, Future chain(HttpConnect conn)) async {
