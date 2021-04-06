@@ -34,6 +34,6 @@ void main() {
   }, filterMapping: {
     "/.*": security.filter
   }, errorMapping: {
-    "404": "/404.html"
+    404: "/404.html"
   }).start();
 }
