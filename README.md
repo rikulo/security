@@ -1,11 +1,9 @@
 # Rikulo Security
 
-Rikulo Security is a lightweight and highly customizable authentication and access-control framework for [Rikulo Stream](http://rikulo.org/projects/stream).
+Rikulo Security is a lightweight and highly customizable authentication and access-control framework for [Rikulo Stream](https://github.com/rikulo//stream).
 
-* [Home](http://rikulo.org/projects/stream)
-* [Documentation](http://docs.rikulo.org/stream/latest/Add-ons/Rikulo_Security)
-* [API Reference](http://www.dartdocs.org/documentation/rikulo_security/1.1.2)
-* [Discussion](http://stackoverflow.com/questions/tagged/rikulo)
+* [API Reference](https://www.dartdocs.org/documentation/rikulo_security/1.1.2)
+* [Discussion](https://stackoverflow.com/questions/tagged/rikulo)
 * [Source Code Repos](https://github.com/rikulo/security)
 * [Issues](https://github.com/rikulo/security/issues)
 
@@ -20,27 +18,27 @@ Add this to your `pubspec.yaml` (or create it):
     dependencies:
       rikulo_security:
 
-Then run the [Pub Package Manager](http://pub.dartlang.org/doc) (comes with the Dart SDK):
+Then run the [Pub Package Manager](https://pub.dartlang.org/doc) (comes with the Dart SDK):
 
     pub install
 
 ## Usage
 
- First, you have to implement [Authenticator](http://api.rikulo.org/security/latest/rikulo_security/Authenticator.html). For sake of description, we use a dummy implementation here called [DummyAuthenticator](http://api.rikulo.org/security/latest/rikulo_security_plugin/DummyAuthenticator.html):
+ First, you have to implement `Authenticator`. For sake of description, we use a dummy implementation here called `DummyAuthenticator`:
 
      final authenticator = new DummyAuthenticator()
        ..addUser("john", "123", ["user"])
        ..addUser("peter", "123", ["user", "admin"]);
 
- Second, you can use [SimpleAccessControl](http://api.rikulo.org/security/latest/rikulo_security_plugin/SimpleAccessControl.html) or implement your own access control
- ([AccessControl](http://api.rikulo.org/security/latest/rikulo_security/AccessControl.html)):
+ Second, you can use `SimpleAccessControl` or implement your own access control
+ (`AccessControl`):
 
      final accessControl = new SimpleAccessControl({
        "/admin/.*": ["admin"],
        "/member/.*": ["user", "admin"]
      });
 
- Finally, instantiate [Security](http://api.rikulo.org/security/latest/rikulo_security/Security.html) with the authenticator and access control you want:
+ Finally, instantiate `Security` with the authenticator and access control you want:
 
      final security = new Security(authenticator, accessControl);
      new StreamServer(uriMapping: {
