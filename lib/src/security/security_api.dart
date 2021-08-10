@@ -109,7 +109,7 @@ abstract class Security<User> {
    * It is meaningful
    * only if the constructor is called with a [RememberMe] instance.
    * * [redirect] - whether to redirect back to the original URI
-   * (`connect.request.uri`).
+   * (`connect.request.uri`). If omitted, it means true.
    * Notice: if [redirect] is false, the caller has to handle
    * [AuthenticationException] in `catchError` (if true, it is handled automatically).
    *

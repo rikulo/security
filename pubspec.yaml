@@ -4,10 +4,10 @@ description: >
   A lightweight and highly customizable authentication and access-control framework for Rikulo Stream.
 authors:
 - Tom Yeh <tomyeh@rikulo.org>
-homepage: http://rikulo.org/projects/stream
-documentation: http://docs.rikulo.org/stream/latest/Add-ons/Rikulo_Security/
+homepage: https://github.com/rikulo/security
+documentation: https://pub.dev/documentation/rikulo_security/latest/
 dependencies:
   stream: any
   rikulo_commons: any
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+  sdk: ">=2.13.0 <3.0.0"

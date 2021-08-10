@@ -4,6 +4,14 @@
 
 * Migrate to null safety
 
+**1.1.2+1**
+
+* `Security.login` rejects if the posted body is over 3000 bytes.
+
+**1.1.2**
+
+* `Security.filter`, `login` and `logout` are instant methods instead of closures.
+
 **1.1.1**
 
 * `Security.switchLogin` supports the `resetSession` argument
