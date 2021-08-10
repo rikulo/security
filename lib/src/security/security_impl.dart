@@ -57,7 +57,7 @@ class _Security<User> implements Security<User> {
         //2. get login information
         //FORM-based login  (note: we ignore query parameters)
         params = await HttpUtil.decodePostedParameters(connect.request,
-            null, 3000); //avoid DoS
+            maxLength: 3000); //avoid DoS
         username = params["s_username"];
         if (username == null)
           username = "";
