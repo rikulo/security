@@ -180,7 +180,7 @@ abstract class Security<User> {
    * the session will be recreated only it is not new.
    */
   Future<Map<String, dynamic>> switchLogin(HttpConnect connect, User user,
-      {bool onLogin: true, bool resetSession});
+      {bool onLogin: true, bool? resetSession});
   /** Switches back.
    * It is used with [switchLogin].
    * 

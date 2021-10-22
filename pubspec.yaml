@@ -2,8 +2,6 @@ name: rikulo_security
 version: 2.0.1
 description: > 
   A lightweight and highly customizable authentication and access-control framework for Rikulo Stream.
-authors:
-- Tom Yeh <tomyeh@rikulo.org>
 homepage: https://github.com/rikulo/security
 documentation: https://pub.dev/documentation/rikulo_security/latest/
 dependencies:
