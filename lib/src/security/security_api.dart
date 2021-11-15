@@ -324,7 +324,7 @@ abstract class RememberMe<User> {
    * * It returns a [Future] object to indicate when it completes.
    * If it completes immediately, it can return null.
    */
-  Future save(HttpConnect connect, User user, bool rememberMe);
+  Future? save(HttpConnect connect, User user, bool rememberMe);
   /** It returns a Future object carrying the user if the given connection
    * is established by a user that was saved in [save]. Thus, caller can do:
    *
@@ -332,7 +332,7 @@ abstract class RememberMe<User> {
    *
    * It can return null to indicate nothing being recalled.
    */
-  Future<User> recall(HttpConnect connect);
+  Future<User?>? recall(HttpConnect connect);
 }
 /** The remember-me plug-in. It is used to redirect the user back to
  * the protected resource after logging in.
