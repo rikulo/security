@@ -2,7 +2,7 @@
 
 Rikulo Security is a lightweight and highly customizable authentication and access-control framework for [Rikulo Stream](https://github.com/rikulo//stream).
 
-* [Home](http://rikulo.org/projects/stream)
+* [Home](https://github.com/rikulo/security)
 * [API Reference](https://pub.dev/documentation/rikulo_security/latest/)
 * [Discussion](http://stackoverflow.com/questions/tagged/rikulo)
 * [Source Code Repos](https://github.com/rikulo/security)
