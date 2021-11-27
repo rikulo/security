@@ -160,7 +160,7 @@ abstract class Security<User> {
    * current one. By default, it is true for session fixation attack protection.
    * * [onLogin] - whether to call the onLogin callback. Default: true.
    */
-  Future setLogin(HttpConnect connect, User user, {bool rememberMe,
+  Future setLogin(HttpConnect connect, User user, {bool? rememberMe,
       bool resetSession: true, bool onLogin: true});
 
   /** Switches to the given [user].
