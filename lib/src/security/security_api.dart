@@ -137,6 +137,11 @@ abstract class Security<User> {
    *
    *     security.logout(connect, redirect: false);
    *
+   * > Note: unlike [login], the default implementation doesn't destroy
+   * > the session upon logout. Rather, it only clears the session.
+   * > Reason: in multiple VM configuration, we might need it to do extra
+   * > clean up. If you'd like to destroy, you can do it in [onLogout].
+   *
    * * [redirect] - whether to redirect to the default web page (defined in
    * [Redirector]).
    *

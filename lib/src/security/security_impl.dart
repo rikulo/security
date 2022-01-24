@@ -66,7 +66,7 @@ class _Security<User> implements Security<User> {
           rememberMe = params["s_rememberMe"] == "true";
       } else {
         rememberMe = rememberMe == true; //excluding null
-        params = new HashMap<String, String>();
+        params = HashMap<String, String>();
       }
 
       //3. retrieve the URI for redirecting
@@ -96,15 +96,17 @@ class _Security<User> implements Security<User> {
 
   @override
   Future logout(HttpConnect connect, {bool redirect: true}) async {
-    var user = currentUser<User>(connect.request.session);
+    final req = connect.request;
+    var user = currentUser<User>(req.session);
     if (user == null) {
       if (redirect)
         connect.redirect(redirector.getLogoutTarget(connect));
       return;
     }
 
-    final data = await authenticator.logout(connect, user);
-    final session = connect.request.session..clear();
+    final data = await authenticator.logout(connect, user),
+      session = req.session..clear();
+      //SPEC: we don't destroy session when logout
     if (data != null) {
       data.forEach((key, value) {
         session[key] = value;
@@ -127,7 +129,7 @@ class _Security<User> implements Security<User> {
         connect.redirect(redirector.getLogin(connect));
         return null; //redirect for login
       }
-      throw new Http404.fromConnect(connect); //404 (not 403) to minimize attack
+      throw Http404.fromConnect(connect); //404 (not 403) to minimize attack
     }
 
     //2. granted and chain
@@ -138,12 +140,13 @@ class _Security<User> implements Security<User> {
   Future setLogin(HttpConnect connect, User user, {bool? rememberMe,
       bool resetSession: true, bool onLogin: true}) async {
     //5. session fixation attack protection
-    var session = connect.request.session;
+    final req = connect.request;
+    var session = req.session;
     if (resetSession) {
-      final backup = new HashMap<String, dynamic>.from(
+      final backup = HashMap<String, dynamic>.from(
           session..remove(_attrRememberUri));
       session.destroy();
-      session = connect.request.session; //re-create
+      session = req.session; //re-create
       session.addAll(backup);
     }
 
@@ -162,11 +165,12 @@ class _Security<User> implements Security<User> {
   @override
   Future<Map<String, dynamic>> switchLogin(HttpConnect connect, User user,
       {bool onLogin: true, bool? resetSession}) async {
-    var session = connect.request.session;
-    final backup = new HashMap<String, dynamic>.from(session);
+    final req = connect.request;
+    var session = req.session;
+    final backup = HashMap<String, dynamic>.from(session);
     if (resetSession ?? !session.isNew) {
       session.destroy();
-      session = connect.request.session;
+      session = req.session;
     } else {
       session.clear();
     }

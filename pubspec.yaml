@@ -1,5 +1,5 @@
 name: rikulo_security
-version: 2.0.2+1
+version: 2.0.3+1
 description: > 
   A lightweight and highly customizable authentication and access-control framework for Rikulo Stream.
 homepage: https://github.com/rikulo/security
