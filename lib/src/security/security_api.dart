@@ -122,7 +122,7 @@ abstract class Security<User> {
    */
   Future login(HttpConnect connect, {
       String? username, String? password, bool? rememberMe,
-      bool redirect: true, bool handleAuthenticationException: true});
+      bool redirect = true, bool handleAuthenticationException = true});
 
   /** The handler used to configure Stream server's URI mapping for handling
    * the logout.
@@ -147,7 +147,7 @@ abstract class Security<User> {
    *
    * * It returns a [Future] object (never null) to indicate when it completes.
    */
-  Future logout(HttpConnect connect, {bool redirect: true});
+  Future logout(HttpConnect connect, {bool redirect = true});
 
   /** Notifies Rikulo Security that the given user logged in.
    * It is useful if you allows the user to login automatically, such as
@@ -166,7 +166,7 @@ abstract class Security<User> {
    * * [onLogin] - whether to call the onLogin callback. Default: true.
    */
   Future setLogin(HttpConnect connect, User user, {bool? rememberMe,
-      bool resetSession: true, bool onLogin: true});
+      bool resetSession = true, bool onLogin = true});
 
   /** Switches to the given [user].
    * Unlike [setLogin], you can switch back easily with [switchBack].
@@ -185,7 +185,7 @@ abstract class Security<User> {
    * the session will be recreated only it is not new.
    */
   Future<Map<String, dynamic>> switchLogin(HttpConnect connect, User user,
-      {bool onLogin: true, bool? resetSession});
+      {bool onLogin = true, bool? resetSession});
   /** Switches back.
    * It is used with [switchLogin].
    * 

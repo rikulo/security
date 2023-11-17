@@ -43,8 +43,8 @@ class _Security<User> implements Security<User> {
 
   @override
   Future login(HttpConnect connect, {String? username, String? password,
-      bool? rememberMe, bool redirect: true,
-      bool handleAuthenticationException: true}) async {
+      bool? rememberMe, bool redirect = true,
+      bool handleAuthenticationException = true}) async {
     String? uri;
     Map<String, String> params;
     redirect = redirect != false; //including null
@@ -95,7 +95,7 @@ class _Security<User> implements Security<User> {
   }
 
   @override
-  Future logout(HttpConnect connect, {bool redirect: true}) async {
+  Future logout(HttpConnect connect, {bool redirect = true}) async {
     final req = connect.request;
     var user = currentUser<User>(req.session);
     if (user == null) {
@@ -138,7 +138,7 @@ class _Security<User> implements Security<User> {
 
   @override
   Future setLogin(HttpConnect connect, User user, {bool? rememberMe,
-      bool resetSession: true, bool onLogin: true}) async {
+      bool resetSession = true, bool onLogin = true}) async {
     //5. session fixation attack protection
     final req = connect.request;
     var session = req.session;
@@ -164,7 +164,7 @@ class _Security<User> implements Security<User> {
 
   @override
   Future<Map<String, dynamic>> switchLogin(HttpConnect connect, User user,
-      {bool onLogin: true, bool? resetSession}) async {
+      {bool onLogin = true, bool? resetSession}) async {
     final req = connect.request;
     var session = req.session;
     final backup = HashMap<String, dynamic>.from(session);
