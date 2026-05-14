@@ -1,5 +1,13 @@
 # CHANGES
 
+**2.5.1**
+
+* `Security.filter` rotates the remember-me cookie on every recall (refreshes Max-Age, closes replay window). Implementers of `RememberMe.save` should treat each call as a rotation point.
+* `SimpleAccessControl.remove(uri)` added; `add` asserts (dev-only) on duplicate patterns.
+* `Security.switchLogin` dartdoc: session-ID rotation from `resetSession` cannot be undone by `switchBack`; pass `resetSession: false` to keep the original ID.
+* `Authenticator.logout` return type: `Future<Map>?` → `Future<Map?>`.
+* Doc / style cleanup (drop `new`, `/** */` → `///`, README fixes, typos).
+
 **2.0.0**
 
 * Migrate to null safety
