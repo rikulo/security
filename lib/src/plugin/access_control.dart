@@ -19,8 +19,25 @@ class SimpleAccessControl implements AccessControl {
   /// Adds a protected resource.
   ///
   /// * [uri] - a regular expression used to match the request URI.
+  ///
+  /// Note: `add` appends; the first matching mapping wins in [canAccess].
+  /// To replace an existing entry, call [remove] first.
   void add(String uri, Iterable<String> roles) {
+    assert(_mapping.every((m) => m.pattern.pattern != "^$uri\$"),
+        "Duplicate URI pattern: $uri (call remove() first to replace)");
     _mapping.add(_ACMapping(uri, roles));
+  }
+
+  /// Removes the mapping previously registered with [uri].
+  /// Returns true if a mapping was removed.
+  bool remove(String uri) {
+    final compiled = "^$uri\$";
+    for (int i = 0, len = _mapping.length; i < len; ++i)
+      if (_mapping[i].pattern.pattern == compiled) {
+        _mapping.removeAt(i);
+        return true;
+      }
+    return false;
   }
 
   @override

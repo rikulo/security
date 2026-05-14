@@ -32,7 +32,8 @@ class _Security<User> implements Security<User> {
       if (reme != null) { //1. remember me
         user = await reme.recall(connect);
         if (user != null)
-          await setLogin(connect, user);
+          //Rotate the cookie on use: refresh Max-Age, close replay window.
+          await setLogin(connect, user, rememberMe: true);
       }
     }
 
@@ -46,7 +47,6 @@ class _Security<User> implements Security<User> {
       bool handleAuthenticationException = true}) async {
     String? uri;
     Map<String, String> params;
-    redirect = redirect != false; //including null
 
     try {
       //1. logout first

@@ -177,6 +177,12 @@ abstract class Security<User> {
   /// * [onLogin] whether to invoke `onLogin`. Default: true.
   /// * [resetSession] whether to recreate a new session. Default: null, i.e.,
   /// the session will be recreated only it is not new.
+  ///
+  /// Note: when [resetSession] triggers a session reset, the underlying
+  /// session ID changes. [switchBack] restores attributes but cannot restore
+  /// the original ID — state keyed by session ID (websocket bindings,
+  /// anti-CSRF tokens, per-session caches) will not survive the round-trip.
+  /// Pass `resetSession: false` to keep the original ID.
   Future<Map<String, dynamic>> switchLogin(HttpConnect connect, User user,
       {bool onLogin = true, bool? resetSession});
   /// Switches back.
@@ -301,6 +307,9 @@ abstract class RememberMe<User> {
   /// > Notice the cookie can be manipulated by a hostile user, so it is
   /// better encoded and packed with extra information that can be verified
   /// at the server.
+  ///
+  /// > Note: also called on [recall] (not only at original login) — treat
+  /// each call as a rotation point.
   ///
   /// * [rememberMe] - whether remember-me is enabled. The user can disable
   /// it if he likes. If false, it means to clean up the cookie.
