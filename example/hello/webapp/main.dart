@@ -12,21 +12,21 @@ part "rsp/login.rsp.dart";
 
 void main() {
   //1. you have to implement [Authenticator]. For sake of description, we use a dummy one
-  final authenticator = new DummyAuthenticator()
+  final authenticator = DummyAuthenticator()
     ..addUser("john", "123", ["user"])
     ..addUser("admin", "123", ["user", "admin"]);
 
   //2. you can use [SimpleAccessControl] or implements your own
-  final accessControl = new SimpleAccessControl({
+  final accessControl = SimpleAccessControl({
     "/admin(|/.*)": ["admin"],
     "/member(|.*)": ["user", "admin"]
   });
 
   //3. instantiate [Security]
-  final security = new Security(authenticator, accessControl);
+  final security = Security(authenticator, accessControl);
 
   //4. start Stream server
-  new StreamServer(uriMapping: {
+  StreamServer(uriMapping: {
     "/": home, //home.rsp.html
     "/login": login, //login.rsp.html
     "/s_login": security.login,

@@ -10,8 +10,7 @@ const String _attrUser = "stream.user";
 typedef FutureOr _LoginCallback<User>(HttpConnect connect, User user, bool? rememberMe);
 typedef FutureOr _LogoutCallback<User>(HttpConnect connect, User user);
 
-/** The implementation of the security module.
- */
+/// The implementation of the security module.
 class _Security<User> implements Security<User> {
   _LoginCallback<User>? _onLogin;
   _LogoutCallback<User>? _onLogout;

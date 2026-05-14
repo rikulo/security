@@ -1,6 +1,6 @@
 # Rikulo Security
 
-Rikulo Security is a lightweight and highly customizable authentication and access-control framework for [Rikulo Stream](https://github.com/rikulo//stream).
+Rikulo Security is a lightweight and highly customizable authentication and access-control framework for [Rikulo Stream](https://github.com/rikulo/stream).
 
 * [Home](https://github.com/rikulo/security)
 * [API Reference](https://pub.dev/documentation/rikulo_security/latest/)
@@ -8,9 +8,7 @@ Rikulo Security is a lightweight and highly customizable authentication and acce
 * [Source Code Repos](https://github.com/rikulo/security)
 * [Issues](https://github.com/rikulo/security/issues)
 
-Stream is distributed under an Apache 2.0 License.
-
-[![Build Status](https://drone.io/github.com/rikulo/security/status.png)](https://drone.io/github.com/rikulo/security/latest)
+Rikulo Security is distributed under an Apache 2.0 License.
 
 ## Installation
 
@@ -19,30 +17,30 @@ Add this to your `pubspec.yaml` (or create it):
     dependencies:
       rikulo_security:
 
-Then run the [Pub Package Manager](https://pub.dartlang.org/doc) (comes with the Dart SDK):
+Then run the [Pub Package Manager](https://dart.dev/tools/pub/cmd) (comes with the Dart SDK):
 
-    pub install
+    dart pub get
 
 ## Usage
 
  First, you have to implement `Authenticator`. For sake of description, we use a dummy implementation here called `DummyAuthenticator`:
 
-     final authenticator = new DummyAuthenticator()
+     final authenticator = DummyAuthenticator()
        ..addUser("john", "123", ["user"])
        ..addUser("peter", "123", ["user", "admin"]);
 
  Second, you can use `SimpleAccessControl` or implement your own access control
  (`AccessControl`):
 
-     final accessControl = new SimpleAccessControl({
+     final accessControl = SimpleAccessControl({
        "/admin/.*": ["admin"],
        "/member/.*": ["user", "admin"]
      });
 
  Finally, instantiate `Security` with the authenticator and access control you want:
 
-     final security = new Security(authenticator, accessControl);
-     new StreamServer(uriMapping: {
+     final security = Security(authenticator, accessControl);
+     StreamServer(uriMapping: {
        "/s_login": security.login,
        "/s_logout": security.logout
      }, filterMapping: {

@@ -4,12 +4,11 @@
 
 part of rikulo_security_plugin;
 
-/** A simple implementation of the access control.
- * It assumes the user object has a getter called `roles` which returns
- * a collection of roles (`Iterable<String>`).
- * Each role is represented as a string.
- * For better performance, it is suggested to be `Set<String>`.
- */
+/// A simple implementation of the access control.
+/// It assumes the user object has a getter called `roles` which returns
+/// a collection of roles (`Iterable<String>`).
+/// Each role is represented as a string.
+/// For better performance, it is suggested to be `Set<String>`.
 class SimpleAccessControl implements AccessControl {
   final _mapping = <_ACMapping>[];
 
@@ -17,12 +16,11 @@ class SimpleAccessControl implements AccessControl {
     mapping?.forEach((uri, roles) => add(uri, roles));
   }
 
-  /** Adds a protected resource.
-   *
-   * * [uri] - a regular expression used to match the request URI.
-   */
+  /// Adds a protected resource.
+  ///
+  /// * [uri] - a regular expression used to match the request URI.
   void add(String uri, Iterable<String> roles) {
-    _mapping.add(new _ACMapping(uri, roles));
+    _mapping.add(_ACMapping(uri, roles));
   }
 
   @override
@@ -58,9 +56,9 @@ class _ACMapping {
   final Set<String> allowed;
 
   _ACMapping(String uri, Iterable<String> roles)
-  : pattern = new RegExp("^$uri\$"),
-    allowed = roles is Set<String> ? roles: new Set<String>.from(roles) {
+  : pattern = RegExp("^$uri\$"),
+    allowed = roles is Set<String> ? roles: Set<String>.from(roles) {
       if (uri.isEmpty || "/.[(".indexOf(uri[0]) < 0)
-        throw new ServerError("URI pattern must start with '/', '.', '[' or '('; not '$uri'");
+        throw ServerError("URI pattern must start with '/', '.', '[' or '('; not '$uri'");
     }
 }
