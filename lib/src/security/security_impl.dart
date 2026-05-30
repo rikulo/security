@@ -113,6 +113,10 @@ class _Security<User> implements Security<User> {
       _setCurrentUser(session, null); //be safe in case data contains it
     }
 
+    //Revoke the remember-me credential; otherwise filter() recalls the user
+    //from the surviving cookie on the next request -- logout wouldn't log out.
+    await rememberMe?.save(connect, user, false);
+
     await _onLogout?.call(connect, user);
 
     if (redirect)

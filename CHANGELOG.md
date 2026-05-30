@@ -1,5 +1,9 @@
 # CHANGES
 
+**2.5.2**
+
+* Security: `Security.logout` now revokes the remember-me credential via `RememberMe.save(connect, user, false)`. Previously logout cleared the session but left the persistent cookie/token valid, so `filter` could silently re-authenticate the user from it on the next request.
+
 **2.5.1**
 
 * `Security.filter` rotates the remember-me cookie on every recall (refreshes Max-Age, closes replay window). Implementers of `RememberMe.save` should treat each call as a rotation point.
